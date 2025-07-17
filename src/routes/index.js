@@ -3,7 +3,7 @@ import userRoute from "./userRoute.js";
 import imageRoute from "./imageRoute.js";
 import commentRoute from "./commentRoute.js";
 import ortherRoute from "./ortherRoute.js";
-import bookingRoute from "./bookingRoute.js";
+import bookingRoute from "./orderRoute.js";
 import traffic from "./trafficRoute.js";
 
 function route(app) {

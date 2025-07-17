@@ -1,7 +1,7 @@
-import Booking from "../models/BookingModal.js";
+import Booking from "../models/Order.js";
 import { sendOrderToDiscord as sendToDiscord } from "../../helpers/discord/index.js";
 
-class BookingController {
+class OrtherController {
   createBooking = async (req, res) => {
     try {
       const { userId, ...dataBooking } = req.body;
@@ -142,4 +142,4 @@ class BookingController {
   };
 }
 
-export default new BookingController();
+export default new OrtherController();

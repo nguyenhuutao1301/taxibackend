@@ -28,7 +28,9 @@ class TrafficController {
         existing.historyIp.push(ip);
         existing.historyTimestamps.push(new Date());
         existing.historyLocation.push(
-          lat && lon ? `https://www.google.com/place/${lat},${lon}` : "unknown"
+          lat && lon
+            ? `https://www.google.com/place/${lat},${lon}`
+            : "không lấy được vị trí"
         );
         existing.historyRef.push(referrer || "unknown");
         await existing.save();
@@ -59,14 +61,14 @@ class TrafficController {
         location:
           lat && lon
             ? `https://www.google.com/maps/place/${lat},${lon}`
-            : "unknown",
+            : "không lấy được vị trí",
         times: 1,
         historyIp: [ip],
         historyRef: referrer ? [referrer] : ["unknown"],
         historyLocation:
           lat && lon
             ? [`https://www.google.com/maps/place/${lat},${lon}`]
-            : ["unknown"],
+            : ["không lấy được vị trí"],
         historyTimestamps: [new Date()],
       };
 
