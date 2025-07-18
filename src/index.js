@@ -39,6 +39,7 @@ app.use((err, req, res, next) => {
 const allowedOrigins = [
   "https://goixegiare.pro.vn",
   "https://xegrabdongnai.pro.vn",
+  "https://taxifrontend.vercel.app",
   "http://localhost:3000",
 ];
 // CORS
