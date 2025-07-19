@@ -2,7 +2,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 const configMap = {
-  "http://localhost:3000": {
+  "localhost:3000": {
     DATABASE_URI: process.env.MONGODB_URI_LOCAL,
     DISCORD_WEBHOOK: process.env.DISCORD_WEBHOOK_URL_LOCAL,
     JWT_SECRET: process.env.JWT_SECRET_LOCAL,
@@ -13,7 +13,7 @@ const configMap = {
     FRONTEND_NAME: "local",
     DOMAIN: process.env.DOMAIN,
   },
-  "https://taxifrontend.vercel.app": {
+  "taxifrontend.vercel.app": {
     DATABASE_URI: process.env.MONGODB_URI_DUYHAI,
     DISCORD_WEBHOOK: process.env.DISCORD_WEBHOOK_URL_DUYHAI,
     JWT_SECRET: process.env.JWT_SECRET_DUYHAI,
@@ -24,7 +24,7 @@ const configMap = {
     FRONTEND_NAME: "duyhaiweb",
     DOMAIN: process.env.DOMAIN_DUYHAI,
   },
-  "https://taxinhanh247.pro.vn": {
+  "taxinhanh247.pro.vn": {
     DATABASE_URI: process.env.MONGODB_URI_TAXINHANH,
     DISCORD_WEBHOOK: process.env.DISCORD_WEBHOOK_URL_TAXINHANH,
     JWT_SECRET: process.env.JWT_SECRET_TAXINHANH,

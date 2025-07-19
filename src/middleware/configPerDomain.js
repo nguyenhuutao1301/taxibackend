@@ -2,11 +2,27 @@ import configMap from "../configs/domain/index.js";
 import { getDbConnection } from "../configs/database/mongoConnectionPool.js";
 
 export async function configPerDomain(req, res, next) {
-  const host = req.headers.origin;
-  const config = configMap[host];
+  const host = req.headers.host;
+  const origin = req.headers.origin;
 
-  if (!config)
-    return res.status(400).json({ message: "Domain unknown: " + host });
+  // Kiểm tra theo host
+  let config = configMap[host];
+
+  // Nếu không tìm thấy theo host thì thử với origin (loại bỏ protocol)
+  if (!config && origin) {
+    try {
+      const originHost = new URL(origin).host;
+      config = configMap[originHost];
+    } catch (err) {
+      console.error("Invalid origin URL:", origin);
+    }
+  }
+
+  if (!config) {
+    return res.status(400).json({
+      message: `Domain unknown: ${host}${origin ? ` or ${origin}` : ""}`,
+    });
+  }
 
   // Gắn config
   req.app.locals.config = config;
