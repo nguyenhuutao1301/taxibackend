@@ -27,6 +27,7 @@ class ImageController {
       await image.save();
 
       res.json({
+        success: true,
         message: "Upload thành công!",
         imageUrl: filePath,
         cloudinaryId: publicId,
