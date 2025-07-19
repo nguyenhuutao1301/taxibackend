@@ -1,4 +1,3 @@
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || "";
 import axios from "axios";
 async function sendDiscordMessage({
   ip,
@@ -8,6 +7,7 @@ async function sendDiscordMessage({
   device,
   browser,
   userAgent,
+  DISCORD_WEBHOOK_URL,
 }) {
   const maps =
     lat && lon
@@ -40,8 +40,9 @@ const sendOrderToDiscord = async ({
   phoneNumber,
   serviceType,
   additionalInfo,
+  DISCORD_WEBHOOK_URL,
 }) => {
-  return axios.post(process.env.DISCORD_WEBHOOK_URL, {
+  return axios.post(DISCORD_WEBHOOK_URL, {
     embeds: [
       {
         title: `👤 Đơn Hàng Mới`,

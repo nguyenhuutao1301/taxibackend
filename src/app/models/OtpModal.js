@@ -4,5 +4,6 @@ const otpSchema = new mongoose.Schema({
   code: String,
   expiresAt: Date,
 });
-const Otp = mongoose.model("Otp", otpSchema);
-export default Otp;
+export function getOtpModel(connection) {
+  return connection.model("Otp", otpSchema);
+}

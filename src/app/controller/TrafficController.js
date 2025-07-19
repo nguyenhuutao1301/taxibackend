@@ -1,9 +1,11 @@
 import { UAParser } from "ua-parser-js";
-import Traffic from "../models/TrafficModals.js";
+import { getTrafficModel } from "../models/TrafficModals.js";
 import { sendDiscordMessage } from "../../helpers/discord/index.js";
 import { isbot } from "isbot";
 class TrafficController {
   createTraffic = async (req, res) => {
+    const config = req.app.locals.config;
+    const Traffic = getTrafficModel(req.db);
     try {
       const { lat, lon, referrer, userAgent, visitorId } = req.body || {};
 
@@ -45,6 +47,7 @@ class TrafficController {
             device,
             browser,
             userAgent,
+            DISCORD_WEBHOOK_URL: config.DISCORD_WEBHOOK,
           });
         }
 
@@ -98,6 +101,7 @@ class TrafficController {
     }
   };
   getTraffic = async (req, res) => {
+    const Traffic = getTrafficModel(req.db);
     try {
       const data = await Traffic.find()
         .select("Ip isAds isBot updatedAt times ref _id")

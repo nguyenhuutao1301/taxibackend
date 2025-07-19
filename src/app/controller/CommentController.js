@@ -1,7 +1,8 @@
-import Comment from "../models/CommentModal.js";
+import { getCommentModel } from "../models/CommentModal.js";
 class CommentController {
   // [GET] /api/comment/:postid
   getComment = async (req, res) => {
+    const Comment = getCommentModel(req.db);
     const postId = req.params.postid;
     try {
       const comment = await Comment.find({ postId }).sort({ date: -1 });
@@ -15,6 +16,7 @@ class CommentController {
   };
   // [POST] /api/comment/:postid
   createComment = async (req, res) => {
+    const Comment = getCommentModel(req.db);
     const postId = req.params.postid;
     if (!postId) {
       return res.json("can't take postID blogs");
@@ -36,6 +38,7 @@ class CommentController {
   };
   // [PUT] /api/comment/:id
   changeComment = async (req, res) => {
+    const Comment = getCommentModel(req.db);
     const id = req.params.id;
     if (!id) {
       return res.json("can't take id");
@@ -51,6 +54,7 @@ class CommentController {
   };
   // [DELETE] /api/comment/:id
   deleteComment = async (req, res) => {
+    const Comment = getCommentModel(req.db);
     const id = req.params.id;
     if (!id) {
       return res.json("can't take id");

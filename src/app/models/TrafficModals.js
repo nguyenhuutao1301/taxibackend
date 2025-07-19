@@ -17,5 +17,6 @@ const trafficSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-const Traffic = mongoose.model("Traffic", trafficSchema);
-export default Traffic;
+export function getTrafficModel(connection) {
+  return connection.model("Traffic", trafficSchema);
+}

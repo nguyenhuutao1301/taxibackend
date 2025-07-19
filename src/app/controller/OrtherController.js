@@ -1,12 +1,10 @@
 import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
-
-import Post from "../models/PostModal.js";
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 class OrtherController {
   // [POST] /sentmessage/discord/traffic
   sentMessageTrafficDiscord = async (req, res) => {
+    const config = req.app.locals.config;
     try {
       const { lat, lon, referrer, userAgent } = req.body || {};
 
@@ -14,7 +12,7 @@ class OrtherController {
         req.headers["x-forwarded-for"]?.split(",")[0] ||
         req.socket?.remoteAddress;
       // Gửi về Discord
-      await axios.post(DISCORD_WEBHOOK_URL, {
+      await axios.post(config.DISCORD_WEBHOOK, {
         embeds: [
           {
             title: `👤 Truy cập từ ${referrer || "user"}`,

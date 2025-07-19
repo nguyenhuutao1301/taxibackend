@@ -1,20 +1,15 @@
-import dotenv from "dotenv";
-dotenv.config();
+// // db/connect.js
+// import mongoose from "mongoose";
 
-import mongoose from "mongoose";
+// async function connect(databaseUri) {
+//   try {
+//     if (!databaseUri) throw new Error("Database URI is missing");
 
-// URL kết nối đến MongoDB (local hoặc MongoDB Atlas)
-const MONGODB_URI = process.env.MONGODB_URI;
-// Thay đổi URL nếu dùng MongoDB Atlas
+//     await mongoose.connect(databaseUri);
+//     console.log("MongoDB connected success ");
+//   } catch (err) {
+//     console.error("MongoDB connection error:", err.message);
+//   }
+// }
 
-// Kết nối tới MongoDB
-async function connect() {
-  try {
-    await mongoose.connect(MONGODB_URI);
-    console.log("MongoDB connected successfully!");
-  } catch (err) {
-    console.error("Error connecting to MongoDB:", err.message);
-  }
-}
-
-export default connect;
+// export default connect;

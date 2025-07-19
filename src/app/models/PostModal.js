@@ -84,7 +84,6 @@ const PostSchema = new mongoose.Schema(
   }
 );
 
-const Post = mongoose.model("Post", PostSchema);
-
-// ✅ Thêm export default
-export default Post;
+export function getPostModel(connection) {
+  return connection.model("Post", PostSchema);
+}

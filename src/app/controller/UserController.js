@@ -1,28 +1,25 @@
 // controllers/authController.js
-import User from "../models/UserModal.js"; // model usr
-import Token from "../models/TokenModal.js"; // model sessin
+import { getUserModel } from "../models/UserModal.js";
+import { getTokenModel } from "../models/TokenModal.js"; // model sessin
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Otp from "../models/OtpModal.js";
+import { getOtpModel } from "../models/OtpModal.js";
 import sendOtpEmail from "../../untils/sendOtpEmail.js";
 
 import dotenv from "dotenv";
 dotenv.config();
-
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_RERESH = process.env.JWT_SECRET_RERESH;
 
 const authUser = {
   // Hỗ trợ truyền đối tượng có _id hoặc userId
   signToken: (user) => {
     return { userId: user.userId || user._id, role: user.role };
   },
-  generationAccessToken: (user) => {
+  generationAccessToken: (user, JWT_SECRET) => {
     return jwt.sign(authUser.signToken(user), JWT_SECRET, {
       expiresIn: "360m",
     });
   },
-  generationRefeshToken: (user) => {
+  generationRefeshToken: (user, JWT_RERESH) => {
     return jwt.sign(authUser.signToken(user), JWT_RERESH, {
       expiresIn: "15d",
     });
@@ -30,6 +27,8 @@ const authUser = {
 
   // Register user
   registerUser: async (req, res) => {
+    const Otp = getOtpModel(req.db);
+    const User = getUserModel(req.db); // lấy model theo connection
     try {
       const { username, email, password, otp } = req.body;
       // Check email
@@ -68,6 +67,11 @@ const authUser = {
 
   // Login user
   loginUser: async (req, res) => {
+    const Token = getTokenModel(req.db);
+    const User = getUserModel(req.db); // lấy model theo connection
+    const config = req.app.locals.config;
+    const JWT_SECRET = config.JWT_SECRET;
+    const JWT_RERESH = config.JWT_SECRET_RERESH;
     try {
       const { email, password } = req.body;
       if (!email || !password) {
@@ -82,8 +86,8 @@ const authUser = {
         return res.status(400).json({ message: "Sai mật khẩu." });
       }
       if (user && isPasswordValid) {
-        const accessToken = authUser.generationAccessToken(user);
-        const refreshToken = authUser.generationRefeshToken(user);
+        const accessToken = authUser.generationAccessToken(user, JWT_SECRET);
+        const refreshToken = authUser.generationRefeshToken(user, JWT_RERESH);
         // Xóa refresh token cũ nếu có
         await Token.findOneAndDelete({ userId: user._id });
         // Lưu refresh token mới vào DB
@@ -109,6 +113,7 @@ const authUser = {
 
   // Refresh token
   refreshTokenUser: async (req, res) => {
+    const Token = getTokenModel(req.db);
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
@@ -153,6 +158,7 @@ const authUser = {
 
   // Logout user
   logoutUser: async (req, res) => {
+    const User = getUserModel(req.db);
     try {
       const refreshToken = req.cookies.refreshToken;
       console.log("Refresh token received:", refreshToken);
@@ -184,6 +190,7 @@ const authUser = {
 
   // [GET] /api/user/[id]
   viewUser: async (req, res) => {
+    const User = getUserModel(req.db);
     try {
       const id = req.query.id;
       if (!id) {
@@ -201,6 +208,7 @@ const authUser = {
   },
   // [PUT] /api/user/update/:id
   updateUser: async (req, res) => {
+    const User = getUserModel(req.db);
     const id = req.params.id;
     if (!id) {
       return res.status(400).json({ message: "Người dùng không tồn tại!!!" });
@@ -238,6 +246,7 @@ const authUser = {
   },
   // [PATCH] /api/user/change-password/:id
   updatePassword: async (req, res) => {
+    const User = getUserModel(req.db);
     const id = req.params.id;
     if (!id) {
       return res.status(400).json({ message: "Người dùng không tồn tại!!!" });
@@ -262,6 +271,7 @@ const authUser = {
     }
   },
   getAllUser: async (req, res) => {
+    const User = getUserModel(req.db);
     try {
       const user = await User.find({}).select("username role phone email _id");
       return res
@@ -277,6 +287,7 @@ const authUser = {
     }
   },
   deletedUser: async (req, res) => {
+    const User = getUserModel(req.db);
     const _id = req.query._id;
     console.log(_id);
     if (!_id) {
@@ -301,7 +312,9 @@ const authUser = {
   },
   // /api/user/register/sent-otp
   sendOtpRegisterIser: async (req, res) => {
+    const Otp = getOtpModel(req.db);
     const { email } = req.body;
+    const config = req.app.locals.config; // lấy config theo domain
     if (!email)
       return res
         .status(400)
@@ -320,7 +333,7 @@ const authUser = {
         { upsert: true, new: true }
       );
 
-      await sendOtpEmail(email, otp);
+      await sendOtpEmail(email, otp, config);
       return res.status(200).json({ success: true, message: "Đã gửi OTP" });
     } catch (error) {
       console.log("err:", error);

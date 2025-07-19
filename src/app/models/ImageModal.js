@@ -4,9 +4,11 @@ import mongoose from "mongoose";
 const imageSchema = new mongoose.Schema(
   {
     filePath: { type: String },
+    publicId: { type: String },
   },
   { timestamps: true }
 );
 
-const Image = mongoose.model("Image", imageSchema);
-export default Image;
+export function getImageModel(connection) {
+  return connection.model("Image", imageSchema);
+}

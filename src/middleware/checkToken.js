@@ -3,10 +3,10 @@ dotenv.config();
 
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 const checkToken = {
   verifyUser: (req, res, next) => {
+    const config = req.app.locals.config;
+    const JWT_SECRET = config.JWT_SECRET;
     const token = req.headers.authorization || req.headers.token;
     if (token) {
       const accessToken = token.split(" ")[1];

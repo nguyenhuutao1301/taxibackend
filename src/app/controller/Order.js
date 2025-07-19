@@ -1,8 +1,11 @@
-import Booking from "../models/Order.js";
+import { getOrderModel } from "../models/Order.js";
 import { sendOrderToDiscord as sendToDiscord } from "../../helpers/discord/index.js";
 
 class OrtherController {
   createBooking = async (req, res) => {
+    const Booking = getOrderModel(req.db);
+    const config = req.app.locals.config;
+    const DISCORD_WEBHOOK_URL = config.DISCORD_WEBHOOK;
     try {
       const { userId, ...dataBooking } = req.body;
       const {
@@ -12,13 +15,14 @@ class OrtherController {
         phoneNumber,
         additionalInfo,
       } = dataBooking;
+      const dataSend = { ...dataBooking, DISCORD_WEBHOOK_URL };
       if (!addressFrom || !addressTo || !serviceType || !phoneNumber) {
         return res
           .status(400)
           .json({ message: "error", err: "Thiếu thông tin bắt buộc." });
       }
-
-      await sendToDiscord(dataBooking); // gửi 1 lần duy nhất
+      console.log(dataSend);
+      await sendToDiscord(dataSend); // gửi 1 lần duy nhất
 
       // Nếu không đăng nhập => không lưu vào DB
       if (!userId) {
@@ -49,6 +53,7 @@ class OrtherController {
   };
   // [POST] /booking/get-all/history
   getHistoryBooking = async (req, res) => {
+    const Booking = getOrderModel(req.db);
     try {
       const { userId } = req.body;
       if (!userId) {
@@ -64,6 +69,7 @@ class OrtherController {
     }
   };
   getAllBooking = async (req, res) => {
+    const Booking = getOrderModel(req.db);
     try {
       const result = await Booking.find({})
         .populate("userId", "username")
@@ -86,6 +92,7 @@ class OrtherController {
   };
   // [DELETE] /booking/delete?id=${id}
   deleteBookingById = async (req, res) => {
+    const Booking = getOrderModel(req.db);
     const _id = req.query.id;
     if (!_id) {
       console.log("can't id:", _id);
@@ -113,6 +120,7 @@ class OrtherController {
   };
   // [PUT] /booking/update?id=${id}
   updateBooking = async (req, res) => {
+    const Booking = getOrderModel(req.db);
     const _id = req.query.id;
     if (!_id) {
       console.log("can't receiver data:", _id);

@@ -59,8 +59,10 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Booking = mongoose.model("Booking", bookingSchema);
-export default Booking;
+export function getOrderModel(connection) {
+  return connection.model("Booking", bookingSchema);
+}
+
 // | Trường                                    | Mô tả                                                                                             |
 // | ----------------------------------------- | ------------------------------------------------------------------------------------------------- |
 // | `driverId`                                | Nếu bạn có hệ thống tài xế, liên kết đặt xe với tài xế cụ thể.                                    |
