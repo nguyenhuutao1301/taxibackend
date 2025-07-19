@@ -1,8 +1,10 @@
+import configMap from "../configs/domain/index.js";
+import { getDbConnection } from "../configs/database/mongoConnectionPool.js";
+
 export async function configPerDomain(req, res, next) {
   const { referer, origin, host } = req.headers;
   let domainKey;
 
-  // Ưu tiên referer (luôn có ở mọi loại request từ frontend)
   if (referer) {
     try {
       domainKey = new URL(referer).host;
@@ -11,7 +13,6 @@ export async function configPerDomain(req, res, next) {
     }
   }
 
-  // Nếu không có referer, thử đến origin
   if (!domainKey && origin) {
     try {
       domainKey = new URL(origin).host;
@@ -20,18 +21,14 @@ export async function configPerDomain(req, res, next) {
     }
   }
 
-  // Nếu vẫn không có, fallback sang host (domain API)
   if (!domainKey) {
     domainKey = host;
   }
 
-  const config = configMap[domainKey];
+  const config = configMap[domainKey]; // ⬅️ lỗi xảy ra nếu configMap không được import
 
   if (!config) {
-    console.warn("Không tìm thấy config cho domain:", domainKey);
-    return res.status(400).json({
-      message: `Domain unknown: ${domainKey}`,
-    });
+    return res.status(400).json({ message: `Domain unknown: ${domainKey}` });
   }
 
   req.app.locals.config = config;
