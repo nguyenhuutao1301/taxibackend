@@ -10,6 +10,7 @@ export async function configPerDomain(req, res, next) {
 
   // Nếu không tìm thấy theo host thì thử với origin (loại bỏ protocol)
   if (!config && origin) {
+    console.log("không khớp host :", host);
     try {
       const originHost = new URL(origin).host;
       config = configMap[originHost];
