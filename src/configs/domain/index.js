@@ -11,6 +11,7 @@ const configMap = {
     EMAIL_USER: process.env.EMAIL_USER_LOCAL,
     EMAIL_PASS: process.env.EMAIL_PASS_LOCAL,
     FRONTEND_NAME: "local",
+    DOMAIN: process.env.DOMAIN,
   },
   "https://taxifrontend.vercel.app": {
     DATABASE_URI: process.env.MONGODB_URI_DUYHAI,
@@ -21,6 +22,7 @@ const configMap = {
     EMAIL_USER: process.env.EMAIL_USER_DUYHAI,
     EMAIL_PASS: process.env.EMAIL_PASS_DUYHAI,
     FRONTEND_NAME: "duyhaiweb",
+    DOMAIN: process.env.DOMAIN_DUYHAI,
   },
   "https://taxinhanh247.pro.vn": {
     DATABASE_URI: process.env.MONGODB_URI_TAXINHANH,
@@ -31,6 +33,7 @@ const configMap = {
     EMAIL_USER: process.env.EMAIL_USER_TAXINHANH,
     EMAIL_PASS: process.env.EMAIL_PASS_TAXINHANH,
     FRONTEND_NAME: "taxinhanh247",
+    DOMAIN: process.env.DOMAIN_TAXINHANH,
   },
 };
 export default configMap;

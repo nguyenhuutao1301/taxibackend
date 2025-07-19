@@ -318,20 +318,14 @@ class PostController {
   };
   // [GET] /api/posts/sitemap
   getPostRenderSiteMap = async (req, res) => {
+    const config = req.app.locals.config;
     const Post = getPostModel(req.db);
     try {
-      const posts = await Post.find(
-        {},
-        {
-          slug: 1,
-          title: 1,
-          image: 1, // object { url, alt }
-          publishedDate: 1,
-          modifiedDate: 1,
-        }
-      ).sort({ createdAt: -1 });
+      const posts = await Post.find({})
+        .select("slug title image publishedDate modifiedDate")
+        .sort({ createdAt: -1 });
 
-      const host = "https://goixegiare.pro.vn";
+      const host = config.DOMAIN;
 
       const data = posts.map((post) => {
         const loc = `${host}/post/${post.slug}`;
