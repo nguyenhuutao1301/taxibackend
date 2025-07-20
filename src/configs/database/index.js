@@ -1,15 +1,26 @@
-// // db/connect.js
-// import mongoose from "mongoose";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
-// async function connect(databaseUri) {
-//   try {
-//     if (!databaseUri) throw new Error("Database URI is missing");
+let cachedConnection = null;
 
-//     await mongoose.connect(databaseUri);
-//     console.log("MongoDB connected success ");
-//   } catch (err) {
-//     console.error("MongoDB connection error:", err.message);
-//   }
-// }
+export async function connectToDatabase() {
+  if (cachedConnection) {
+    return cachedConnection;
+  }
 
-// export default connect;
+  try {
+    const databaseUri = process.env.MONGODB_URI;
+    if (!databaseUri) {
+      throw new Error("MONGODB_URI is not defined in environment variables");
+    }
+
+    const connection = await mongoose.connect(databaseUri);
+    cachedConnection = connection;
+    console.log("MongoDB connected successfully");
+    return connection;
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    throw error;
+  }
+}

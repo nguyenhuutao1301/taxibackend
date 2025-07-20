@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { connectToDatabase } from "../../configs/database/index.js";
 
 const PostSchema = new mongoose.Schema(
   {
@@ -37,53 +38,51 @@ const PostSchema = new mongoose.Schema(
     },
     modifiedDate: {
       type: Date,
+      default: Date.now,
     },
     image: {
       url: {
         type: String,
-        required: true,
+        trim: true,
       },
       alt: {
         type: String,
+        trim: true,
       },
     },
     tags: [
       {
         type: String,
+        trim: true,
       },
     ],
     category: {
-      name: {
-        type: String,
-      },
-      url: {
-        type: String,
-      },
+      type: String,
+      trim: true,
     },
     breadcrumbs: [
       {
         name: {
           type: String,
+          trim: true,
         },
         url: {
           type: String,
+          trim: true,
         },
       },
     ],
-    comments: [
+    likes: [
       {
-        author: { type: String },
-        content: { type: String },
-        date: { type: Date, default: Date.now },
+        type: String,
+        trim: true,
       },
     ],
-    likes: [{ type: String, default: "" }],
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export function getPostModel(connection) {
+export const getPostModel = async () => {
+  const connection = await connectToDatabase();
   return connection.model("Post", PostSchema);
-}
+};
