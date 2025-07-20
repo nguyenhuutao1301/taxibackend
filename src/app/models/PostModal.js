@@ -37,46 +37,47 @@ const PostSchema = new mongoose.Schema(
     },
     modifiedDate: {
       type: Date,
-      default: Date.now,
     },
     image: {
       url: {
         type: String,
-        trim: true,
+        required: true,
       },
       alt: {
         type: String,
-        trim: true,
       },
     },
     tags: [
       {
         type: String,
-        trim: true,
       },
     ],
     category: {
-      type: String,
-      trim: true,
+      name: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
     },
     breadcrumbs: [
       {
         name: {
           type: String,
-          trim: true,
         },
         url: {
           type: String,
-          trim: true,
         },
       },
     ],
-    likes: [
+    comments: [
       {
-        type: String,
-        trim: true,
+        author: { type: String },
+        content: { type: String },
+        date: { type: Date, default: Date.now },
       },
     ],
+    likes: [{ type: String, default: "" }],
   },
   { timestamps: true }
 );
