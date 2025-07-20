@@ -14,7 +14,6 @@ dotenv.config();
 const port = process.env.PORT || 3002;
 import { configPerDomain } from "./middleware/configPerDomain.js";
 import cookieParser from "cookie-parser";
-import PostController from "../src/app/controller/PostController.js";
 app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 // connect database mongoose
@@ -58,7 +57,6 @@ app.use(
     credentials: true,
   })
 );
-app.get("/api/posts/sitemap", PostController.getPostRenderSiteMap);
 //config domain
 app.use(configPerDomain);
 app.use(express.json({ limit: "50mb" }));
