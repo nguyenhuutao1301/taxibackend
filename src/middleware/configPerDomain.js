@@ -2,33 +2,37 @@ import configMap from "../configs/domain/index.js";
 import { getDbConnection } from "../configs/database/mongoConnectionPool.js";
 
 export async function configPerDomain(req, res, next) {
-  const host = req.headers.host;
-  const origin = req.headers.origin;
+  const { referer, origin, host } = req.headers;
+  let domainKey;
 
-  // Kiểm tra theo host
-  let config = configMap[host];
-
-  // Nếu không tìm thấy theo host thì thử với origin (loại bỏ protocol)
-  if (!config && origin) {
-    console.log("không khớp host :", host);
+  if (referer) {
     try {
-      const originHost = new URL(origin).host;
-      config = configMap[originHost];
+      domainKey = new URL(referer).host;
+    } catch (err) {
+      console.error("Invalid referer URL:", referer);
+    }
+  }
+
+  if (!domainKey && origin) {
+    try {
+      domainKey = new URL(origin).host;
     } catch (err) {
       console.error("Invalid origin URL:", origin);
     }
   }
 
-  if (!config) {
-    return res.status(400).json({
-      message: `Domain unknown: ${host}${origin ? ` or ${origin}` : ""}`,
-    });
+  if (!domainKey) {
+    domainKey = host;
   }
 
-  // Gắn config
+  const config = configMap[domainKey]; // ⬅️ lỗi xảy ra nếu configMap không được import
+
+  if (!config) {
+    return res.status(400).json({ message: `Domain unknown: ${domainKey}` });
+  }
+
   req.app.locals.config = config;
 
-  // Kết nối DB cho domain tương ứng
   try {
     req.db = await getDbConnection(config.DATABASE_URI);
     next();

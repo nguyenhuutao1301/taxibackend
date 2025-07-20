@@ -117,6 +117,8 @@ class TrafficController {
     }
   };
   getTrafficById = async (req, res) => {
+    const config = req.app.locals.config;
+    const Traffic = getTrafficModel(req.db);
     const _id = req.query.id;
     if (!_id) {
       console.log("get traffic by id : ", _id);
