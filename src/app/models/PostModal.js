@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { connectToDatabase } from "../../configs/database/index.js";
 
 const PostSchema = new mongoose.Schema(
   {
@@ -82,7 +81,6 @@ const PostSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const getPostModel = async () => {
-  const connection = await connectToDatabase();
+export function getPostModel(connection) {
   return connection.model("Post", PostSchema);
-};
+}

@@ -2,7 +2,7 @@ import { getPostModel } from "../models/PostModal.js";
 class PostController {
   // [POST] /api/posts
   createPosts = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     try {
       let counter = 1;
       const {
@@ -46,7 +46,7 @@ class PostController {
     }
   };
   getAllPostAndLimit = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     try {
       const { limit } = req.query;
 
@@ -78,7 +78,7 @@ class PostController {
 
   // [POST] / api/posts/find  find posts by tags
   filterPost = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     try {
       const { tags } = req.body;
       const limit = Math.max(1, parseInt(req?.query?.limit) || 10);
@@ -128,7 +128,7 @@ class PostController {
   };
   // [GET] /api/posts/find/query?q=query&limit=number find posts by query
   getPostByQuery = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     try {
       const query = req.query.q?.trim();
       const limit = Math.max(1, parseInt(req.query.limit, 10) || 5);
@@ -182,7 +182,7 @@ class PostController {
   };
   // [GET] /api/posts/:slug
   getPostBySlug = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     try {
       const slug = req.params.slug;
       if (!slug) {
@@ -200,7 +200,7 @@ class PostController {
     }
   };
   getPostById = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     const _id = req.params.id;
     console.log("id:", _id);
     if (!_id) {
@@ -220,7 +220,7 @@ class PostController {
   };
   // [DELETE] /api/posts/:id
   deletePost = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     const id = req.params.id;
     if (!id) {
       return res.status(400).json({ message: "cant receive id blogs" });
@@ -235,7 +235,7 @@ class PostController {
   };
   //[PUT] /api/posts/:id
   updatePost = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     const id = req.params.id;
     if (!id) {
       return res.status(400).json({ message: "cant receive id blogs" });
@@ -262,7 +262,7 @@ class PostController {
   };
   //[GET] /api/posts?page=1&limit=10
   getPostsWithPagination = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     try {
       // Input validation and sanitization
       const page = Math.max(1, parseInt(req.query.page) || 1);
@@ -318,13 +318,13 @@ class PostController {
   };
   // [GET] /api/posts/sitemap
   getPostRenderSiteMap = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     try {
       const posts = await Post.find({})
         .select("slug title image publishedDate modifiedDate")
         .sort({ createdAt: -1 });
 
-      const host = config.DOMAIN;
+      const host = req.app.locals.config.DOMAIN;
 
       const data = posts.map((post) => {
         const loc = `${host}/post/${post.slug}`;
@@ -360,7 +360,7 @@ class PostController {
     }
   };
   patchLikePostById = async (req, res) => {
-    const Post = await getPostModel();
+    const Post = getPostModel(req.db);
     const _id = req.query.postId;
     if (!_id) {
       console.log("err receiver id:", _id);

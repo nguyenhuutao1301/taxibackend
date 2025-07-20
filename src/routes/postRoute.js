@@ -10,7 +10,7 @@ router.get("/posts/find/query", PostController.getPostByQuery); // get posts by 
 router.get("/posts/get-all", PostController.getAllPostAndLimit); // get all posts and filter by limit
 router.get("/posts/by-id/:id", PostController.getPostById); // get post by id
 //[GET] /api/posts/sitemap
-// router.get("/posts/sitemap", PostController.getPostRenderSiteMap);
+router.get("/posts/sitemap", PostController.getPostRenderSiteMap);
 // [POST] /api/posts
 router.post("/posts", checkadmin.verifyAdmin, PostController.createPosts); //crete new post
 
