@@ -89,6 +89,7 @@ class TrafficController {
           device,
           browser,
           userAgent,
+          DISCORD_WEBHOOK_URL: config.DISCORD_WEBHOOK,
         });
       }
 
