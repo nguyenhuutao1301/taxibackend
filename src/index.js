@@ -43,18 +43,23 @@ const allowedOrigins = [
   "http://localhost:3000",
 ];
 // CORS
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       // Cho phép khi không có origin (như từ cURL hoặc Postman)
+//       if (!origin) return callback(null, true);
+//       if (allowedOrigins.includes(origin)) {
+//         return callback(null, true);
+//       } else {
+//         return callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//   })
+// );
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Cho phép khi không có origin (như từ cURL hoặc Postman)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
+    origin: "*",
   })
 );
 //config domain
