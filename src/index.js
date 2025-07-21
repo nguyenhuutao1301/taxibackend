@@ -40,6 +40,7 @@ const allowedOrigins = [
   "https://xegrabdongnai.pro.vn",
   "https://taxifrontend.vercel.app",
   "https://taxinhanh247.pro.vn",
+  "taxisieure.com",
   "http://localhost:3000",
 ];
 // CORS
@@ -57,11 +58,7 @@ const allowedOrigins = [
 //     credentials: true,
 //   })
 // );
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use(cors());
 //config domain
 app.use(configPerDomain);
 app.use(express.json({ limit: "50mb" }));
