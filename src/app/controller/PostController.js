@@ -18,6 +18,7 @@ class PostController {
         tags,
         category,
         breadcrumbs,
+        likes,
       } = req.body;
       let uniqueSlug = slug;
       while (await Post.findOne({ slug: uniqueSlug })) {
@@ -36,6 +37,7 @@ class PostController {
         image,
         tags,
         category,
+        likes,
         breadcrumbs,
       });
       // save data to database
