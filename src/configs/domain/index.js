@@ -13,7 +13,7 @@ const configMap = {
     FRONTEND_NAME: "local",
     DOMAIN: process.env.DOMAIN,
   },
-  "taxisieure.com": {
+  "datxetietkiem.com": {
     DATABASE_URI: process.env.MONGODB_URI_DUYHAI,
     DISCORD_WEBHOOK: process.env.DISCORD_WEBHOOK_URL_DUYHAI,
     JWT_SECRET: process.env.JWT_SECRET_DUYHAI,

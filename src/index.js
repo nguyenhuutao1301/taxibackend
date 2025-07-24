@@ -41,7 +41,7 @@ const allowedOrigins = [
   "https://taxifrontend.vercel.app",
   "https://taxinhanh247.pro.vn",
   "https://datxenhanh-24h.pro.vn",
-  "https://taxisieure.com",
+  "https://datxetietkiem.com",
   "http://localhost:3000",
 ];
 // CORS
