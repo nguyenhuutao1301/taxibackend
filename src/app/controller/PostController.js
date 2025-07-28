@@ -52,9 +52,7 @@ class PostController {
     try {
       const { limit } = req.query;
 
-      let query = Post.find({})
-        .select("title slug createdAt isIndexed")
-        .sort({ createdAt: -1 });
+      let query = Post.find({}).select("title slug").sort({ createdAt: -1 });
 
       if (limit !== undefined) {
         const parsedLimit = parseInt(limit, 10);
