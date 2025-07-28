@@ -53,7 +53,7 @@ class PostController {
       const { limit } = req.query;
 
       let query = Post.find({})
-        .select("title slug createdAt")
+        .select("title slug createdAt isIndexed")
         .sort({ createdAt: -1 });
 
       if (limit !== undefined) {

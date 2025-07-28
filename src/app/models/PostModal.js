@@ -78,6 +78,10 @@ const PostSchema = new mongoose.Schema(
       },
     ],
     likes: [{ type: String, default: "" }],
+    isIndexed: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
