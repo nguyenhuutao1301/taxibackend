@@ -1,22 +1,18 @@
 import express from "express";
 import { google } from "googleapis";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
 const router = express.Router();
 
-// 👇 Tạo __dirname trong ES Module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const rawCredentials = process.env.GOOGLE_CREDENTIALS;
 
-const KEY_PATH = path.join(
-  __dirname,
-  "../google/meta-plateau-467315-g1-ad931dbd8116.json"
-);
+if (!rawCredentials) {
+  throw new Error("Thiếu biến môi trường GOOGLE_CREDENTIALS");
+}
+
+// Parse chuỗi JSON thành object
+const key = JSON.parse(rawCredentials);
+
 const SCOPES = ["https://www.googleapis.com/auth/indexing"];
-
-const key = JSON.parse(fs.readFileSync(KEY_PATH, "utf8"));
 
 const jwtClient = new google.auth.JWT({
   email: key.client_email,
