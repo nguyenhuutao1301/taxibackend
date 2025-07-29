@@ -52,8 +52,14 @@ class GoogleController {
         data: response.data,
       });
     } catch (error) {
-      console.error("Lỗi gửi Indexing API:", error.message);
-      return res.status(500).json({ message: "Lỗi gửi Indexing API", error });
+      console.error("Lỗi gửi Indexing API:", error); // Log toàn bộ error
+      return res
+        .status(500)
+        .json({
+          message: "Lỗi gửi Indexing API",
+          error: error.message,
+          details: error,
+        });
     }
   };
 }
