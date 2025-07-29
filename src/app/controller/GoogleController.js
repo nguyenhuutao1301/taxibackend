@@ -1,3 +1,7 @@
+import { Headers } from "node-fetch";
+if (typeof global.Headers === "undefined") {
+  global.Headers = Headers;
+}
 const base64Credentials = process.env.GOOGLE_CREDENTIALS;
 import { getPostModel } from "../models/PostModal.js";
 import { google } from "googleapis";
