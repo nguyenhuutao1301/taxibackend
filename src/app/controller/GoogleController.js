@@ -43,6 +43,7 @@ class GoogleController {
           error: response.data,
         });
       }
+      console.log("Đã gửi yêu cầu index:", response.data);
       // Cập nhật trạng thái index trong cơ sở dữ liệu
       await Post.updateOne({ url }, { $set: { indexed: true } });
 
