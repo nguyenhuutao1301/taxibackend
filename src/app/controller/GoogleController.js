@@ -51,7 +51,7 @@ class GoogleController {
       }
       console.log("Đã gửi yêu cầu index:", response.data);
       // Cập nhật trạng thái index trong cơ sở dữ liệu
-      await Post.updateOne({ slug }, { $set: { indexed: true } });
+      await Post.updateOne({ slug }, { $set: { isIndexed: true } });
       console.log("Đã update db:", url);
       return res.status(200).json({
         message: "Đã gửi yêu cầu index thành công.",
