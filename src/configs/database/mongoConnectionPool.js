@@ -7,12 +7,7 @@ export async function getDbConnection(DATABASE_URI) {
     return connections[DATABASE_URI];
   }
 
-  const conn = await mongoose
-    .createConnection(DATABASE_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .asPromise();
+  const conn = await mongoose.createConnection(DATABASE_URI).asPromise();
 
   connections[DATABASE_URI] = conn;
   return conn;
