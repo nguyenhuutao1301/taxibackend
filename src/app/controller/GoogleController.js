@@ -1,13 +1,14 @@
-const rawCredentials = process.env.GOOGLE_CREDENTIALS;
+const base64Credentials = process.env.GOOGLE_CREDENTIALS;
 import { getPostModel } from "../models/PostModal.js";
 import { google } from "googleapis";
 
-if (!rawCredentials) {
-  throw new Error("Thiếu biến môi trường GOOGLE_CREDENTIALS");
+if (!base64Credentials) {
+  throw new Error("Thiếu GOOGLE_CREDENTIALS_BASE64");
 }
 
-// Parse chuỗi JSON thành object
-const key = JSON.parse(rawCredentials);
+const key = JSON.parse(
+  Buffer.from(base64Credentials, "base64").toString("utf-8")
+);
 
 const SCOPES = ["https://www.googleapis.com/auth/indexing"];
 
@@ -53,13 +54,11 @@ class GoogleController {
       });
     } catch (error) {
       console.error("Lỗi gửi Indexing API:", error); // Log toàn bộ error
-      return res
-        .status(500)
-        .json({
-          message: "Lỗi gửi Indexing API",
-          error: error.message,
-          details: error,
-        });
+      return res.status(500).json({
+        message: "Lỗi gửi Indexing API",
+        error: error.message,
+        details: error,
+      });
     }
   };
 }
