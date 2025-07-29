@@ -29,8 +29,9 @@ const indexing = google.indexing({
 class GoogleController {
   postIndexUrl = async (req, res) => {
     const Post = getPostModel(req.db);
-    const { url, type = "URL_UPDATED" } = req.body;
-
+    const config = req.app.locals.config; // lấy config theo domain
+    const { slug, type = "URL_UPDATED" } = req.body;
+    const url = `${config.DOMAIN}/blogs/${slug}`;
     if (!url) {
       return res.status(400).json({ message: "Thiếu URL cần index." });
     }
@@ -50,8 +51,8 @@ class GoogleController {
       }
       console.log("Đã gửi yêu cầu index:", response.data);
       // Cập nhật trạng thái index trong cơ sở dữ liệu
-      await Post.updateOne({ url }, { $set: { indexed: true } });
-
+      await Post.updateOne({ slug }, { $set: { indexed: true } });
+      console.log("Đã update db:", url);
       return res.status(200).json({
         message: "Đã gửi yêu cầu index thành công.",
         data: response.data,
