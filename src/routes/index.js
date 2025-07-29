@@ -5,7 +5,7 @@ import commentRoute from "./commentRoute.js";
 import ortherRoute from "./ortherRoute.js";
 import bookingRoute from "./orderRoute.js";
 import traffic from "./trafficRoute.js";
-import indexGoogle from "./indexGoogleRoute.js";
+import indexGoogle from "./GoogleRoute.js";
 
 function route(app) {
   app.use("/api", postRoute);
