@@ -1,7 +1,3 @@
-import { Headers } from "node-fetch";
-if (typeof global.Headers === "undefined") {
-  global.Headers = Headers;
-}
 const base64Credentials = process.env.GOOGLE_CREDENTIALS;
 import { getPostModel } from "../models/PostModal.js";
 import { google } from "googleapis";
@@ -51,8 +47,16 @@ class GoogleController {
       }
       console.log("Đã gửi yêu cầu index:", response.data);
       // Cập nhật trạng thái index trong cơ sở dữ liệu
-      await Post.updateOne({ slug }, { $set: { isIndexed: true } });
-      console.log("Đã update db:", url);
+      const updateRes = await Post.updateOne(
+        { slug },
+        { $set: { isIndexed: true } }
+      );
+      if (updateRes.nModified === 0) {
+        console.warn(`Không tìm thấy bài viết với slug: ${slug}`);
+        return res.status(404).json({
+          message: `Không tìm thấy bài viết với slug: ${slug}`,
+        });
+      }
       return res.status(200).json({
         message: "Đã gửi yêu cầu index thành công.",
         data: response.data,
