@@ -10,6 +10,7 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+app.set("trust proxy", true);
 dotenv.config();
 const port = process.env.PORT || 3002;
 import { configPerDomain } from "./middleware/configPerDomain.js";
@@ -70,13 +71,4 @@ route(app);
 // app listen
 app.listen(port, () => {
   console.log(`Sever listening on port ${port}`);
-});
-// app test
-app.get("/info", (req, res) => {
-  const cfg = req.app.locals.config;
-  res.json({
-    frontend: cfg.FRONTEND_NAME,
-    db: cfg.DATABASE_URI,
-    discord: cfg.DISCORD_WEBHOOK,
-  });
 });
