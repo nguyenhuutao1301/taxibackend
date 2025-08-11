@@ -11,7 +11,7 @@ class OpenAiController {
     }
     const prompt = `
 Bạn là chuyên gia SEO và copywriting chuyên nghiệp. 
-Hãy viết một bài viết CHUYÊN SÂU với độ dài khoảng 4000 từ, đảm bảo tối ưu SEO và phù hợp với độc giả Việt Nam.
+Hãy viết một bài viết CHUYÊN SÂU với độ dài khoảng 4000 - 5000 từ, đảm bảo tối ưu SEO và phù hợp với độc giả Việt Nam.
 
 Yêu cầu:
 1. Nội dung phải chi tiết, đầy đủ, và có cấu trúc rõ ràng với các thẻ H2, H3, H4.
@@ -28,7 +28,7 @@ Yêu cầu:
 4. Nội dung phải CHUYÊN SÂU:
    - Phân tích, so sánh, nêu ưu nhược điểm.
    - sử dụng thông tin địa phương và ngôn ngữ phù hợp với độc giả Việt Nam.
-   - dùng các danh lam thắng cảnh và các xã , huyện , tỉnh , thành phố để phân tích nội dung
+   - dùng các danh lam thắng cảnh và các xã , huyện , tỉnh , thành phố viết chuyên sâu nội dung tốt nhất càng chi tiết càng tốt
    - Có ví dụ thực tế, số liệu, và nghiên cứu liên quan.
    - Có lời khuyên, mẹo, và kết luận rõ ràng.
    - Có thể chia thành 10-15 mục lớn với các heading phù hợp.
