@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import checkToken from "../middleware/checkToken.js";
-import CommentController from "../app/controller/CommentController.js";
+import CommentController from "../app/controller/comment.controller.js";
 
 router.get("/comment/:postid", CommentController.getComment);
 router.post(

@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import checkToken from "../middleware/checkToken.js";
-import OrtherControler from "../app/controller/Order.js";
+import OrtherControler from "../app/controller/order.controller.js";
 router.post("/booking/discord/create", OrtherControler.createBooking);
 router.post("/booking/get-all/history", OrtherControler.getHistoryBooking);
 router.get(

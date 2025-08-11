@@ -1,5 +1,5 @@
 import { UAParser } from "ua-parser-js";
-import { getTrafficModel } from "../models/TrafficModals.js";
+import { getTrafficModel } from "../models/traffic.models.js";
 import { sendDiscordMessage } from "../../helpers/discord/index.js";
 import { isbot } from "isbot";
 class TrafficController {

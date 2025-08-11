@@ -1,5 +1,5 @@
 const base64Credentials = process.env.GOOGLE_CREDENTIALS;
-import { getPostModel } from "../models/PostModal.js";
+import { getPostModel } from "../models/post.models.js";
 import { google } from "googleapis";
 
 if (!base64Credentials) {

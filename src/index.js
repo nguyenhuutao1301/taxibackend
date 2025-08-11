@@ -2,7 +2,7 @@ import express from "express";
 import morgan from "morgan";
 const app = express();
 
-import route from "./routes/index.js";
+import route from "./routes/index.route.js";
 import cors from "cors";
 // import connectDB from "./configs/database/index.js";
 import path from "path";

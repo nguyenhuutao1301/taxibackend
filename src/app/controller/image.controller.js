@@ -1,4 +1,4 @@
-import { getImageModel } from "../models/ImageModal.js";
+import { getImageModel } from "../models/image.models.js";
 import cloudinary from "../../../cloudinary/index.js";
 class ImageController {
   // [GET] /api/images

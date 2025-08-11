@@ -1,4 +1,4 @@
-import { getOrderModel } from "../models/Order.js";
+import { getOrderModel } from "../models/order.models.js";
 import { sendOrderToDiscord as sendToDiscord } from "../../helpers/discord/index.js";
 
 class OrtherController {

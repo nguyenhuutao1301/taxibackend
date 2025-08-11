@@ -1,4 +1,5 @@
-import { getPostModel } from "../models/PostModal.js";
+import { getPostModel } from "../models/post.models.js";
+
 class PostController {
   // [POST] /api/posts
   createPosts = async (req, res) => {

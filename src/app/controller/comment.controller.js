@@ -1,4 +1,4 @@
-import { getCommentModel } from "../models/CommentModal.js";
+import { getCommentModel } from "../models/comment.model.js";
 class CommentController {
   // [GET] /api/comment/:postid
   getComment = async (req, res) => {

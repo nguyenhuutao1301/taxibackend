@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import authUser from "../app/controller/UserController.js";
+import authUser from "../app/controller/user.controller.js";
 import checkToken from "../middleware/checkToken.js";
 
 router.post("/user/register/send-otp", authUser.sendOtpRegisterIser);

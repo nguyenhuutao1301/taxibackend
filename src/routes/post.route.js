@@ -1,7 +1,8 @@
 import express from "express";
 const router = express.Router();
 import checkadmin from "../middleware/checkToken.js";
-import PostController from "../app/controller/PostController.js";
+import PostController from "../app/controller/post.controller.js";
+
 // [GET] /api/post/page (phân trang hoặc lấy tất cả, xử lý trong controller)
 router.get("/posts/get-all/page", PostController.getPostsWithPagination); // get posts with pagination (xử lý limit, page trong controller)
 // [GET] /api/posts

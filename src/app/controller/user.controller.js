@@ -1,9 +1,9 @@
 // controllers/authController.js
-import { getUserModel } from "../models/UserModal.js";
-import { getTokenModel } from "../models/TokenModal.js"; // model sessin
+import { getUserModel } from "../models/user.models.js";
+import { getTokenModel } from "../models/token.models.js"; // model sessin
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { getOtpModel } from "../models/OtpModal.js";
+import { getOtpModel } from "../models/auth.models.js";
 import sendOtpEmail from "../../untils/sendOtpEmail.js";
 
 import dotenv from "dotenv";
