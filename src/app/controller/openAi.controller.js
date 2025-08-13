@@ -15,7 +15,6 @@ async function callGPT(prompt) {
     model: "gpt-5-nano", // GPT-5-nano
     input: prompt,
   });
-  console.log(res.output_text);
   return res.output_text;
 }
 
