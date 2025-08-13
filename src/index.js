@@ -14,6 +14,15 @@ app.set("trust proxy", true);
 dotenv.config();
 const port = process.env.PORT || 3002;
 import { configPerDomain } from "./middleware/configPerDomain.js";
+// 📌 Tăng timeout toàn bộ request (5 phút)
+app.use((req, res, next) => {
+  res.setTimeout(300000, () => {
+    // 300000 ms = 5 phút
+    console.error("⏱ Request timeout.");
+    res.status(408).json({ message: "Request Timeout" });
+  });
+  next();
+});
 import cookieParser from "cookie-parser";
 app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
@@ -60,6 +69,7 @@ app.use(
     credentials: true,
   })
 );
+
 // app.use(cors());
 //config domain
 app.use(configPerDomain);
