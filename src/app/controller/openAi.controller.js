@@ -28,10 +28,10 @@ Từ khóa chính: "${keyword}"
 
 Trả về JSON:
 {
-  "title": "Tiêu đề chứa từ khóa",
+  "title": "Tiêu đề chứa từ khóa chinh",
   "description": "Mô tả ngắn 155-160 ký tự chứa từ khóa",
   "tags": ["tag1", "tag2", "tag3"],
-  "slug": "slug-chua-tu-khoa",
+  "slug": "tieu-de-chua-tu-khoa-chinh",
   "outline": ["outline", "outline", "outline", "..."]
 }
 ${promptCustom || ""}
