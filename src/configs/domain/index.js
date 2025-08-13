@@ -59,9 +59,10 @@ const configMap = {
     FRONTEND_NAME: "taxinhanh247.pro.vn",
     DOMAIN: process.env.DOMAIN_TAXINHANH,
     PROMPT: `Nội dung phải CHUYÊN SÂU:
-   - Ngành viết về dịch vụ đặt xe : xe ôm , taxi , giao hàng
+   - Ngành viết về dịch vụ vận tải hành khách như grab , mai linh, vinasun , xanh sm ,...
    - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh để viết chuyên sâu có thể sử dụng mỗi địa phương làm 1 tiêu đề phụ
    - Có ví dụ thực tế, số liệu, và nghiên cứu liên quan.
+   - nếu cần sử dụng thêm icon phù hợp
    - Dùng các thương hiệu tương tự như XanhSM, Grab, Be, Vinasun để phân tích nội dung.
    - Một số thông tin su dung trong content:
       + Số điện thoại 0327883039
