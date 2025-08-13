@@ -35,9 +35,9 @@ Trả về JSON:
   "outline": ["outline", "outline", "outline", "..."]
 }
 ${promptCustom || ""}
--tags phải liên quan đến từ khóa chính ví dụ grab đồng nai sẽ có tag ["grab biên hòa","grab long thành","đặt taxi vinasun đồng nai"
+-tags (từ khóa) phải liên quan đến từ khóa chính ví dụ grab đồng nai sẽ có tags ["grab biên hòa","grab long thành","đặt taxi vinasun đồng nai",...] .tuyệt đối không sử dụng tags dạng grab-dong-nai
 -slug được tạo thành từ từ khóa ${keyword} ví dụ grab xe máy có slug grab-xe-may
-Chỉ trả JSON hợp lệ. không trả thêm bất cữ dữ liệu nào khác
+-Bắt Buộc tuyệt đối 100% Chỉ trả JSON hợp lệ. không trả thêm bất cữ dữ liệu nào khác
 `;
 }
 
@@ -53,9 +53,9 @@ Outline:
 ${outline.map((title, i) => `${i + 1}. ${title}`).join("\n")}
 
 Yêu cầu:
-- Mỗi mục 100 - 300 từ, thẻ H2/H3 rõ ràng.
+- Mỗi mục 50 - 300 từ, thẻ H2/H3/H4 rõ ràng.
 - tổng thể dữ liệu dữ liệu trả về không vượt quá ${numberWord} từ
-- Nội dung khác nhau, không trùng lặp.
+- Nội dung khác nhau, không trùng lặp, tự nhiên cho khách hàng, độc giả đọc.
 - Chèn icon nếu phù hợp.
 - sử dụng tags html semantic ul,li,table,...
 - Trả về JSON dạng:
@@ -65,7 +65,7 @@ Yêu cầu:
     ...
   ]
 }
-Chỉ trả JSON hợp lệ.không trả thêm dữ liệu không liên quan
+- Bắt Buộc tuyệt đối 100% Chỉ trả JSON hợp lệ.không trả thêm dữ liệu không liên quan
 `;
 }
 

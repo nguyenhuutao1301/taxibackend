@@ -59,18 +59,19 @@ const configMap = {
     FRONTEND_NAME: "taxinhanh247.pro.vn",
     DOMAIN: process.env.DOMAIN_TAXINHANH,
     PROMPT: `Nội dung phải CHUYÊN SÂU:
+   - outline và nội dung phải (liên quan) đến từ khóa chính và sử dụng ngôn từ tự nhiên
+   - không sử dụng nội dung kiểu như mô tả (đây là nội dung seo) vì bạn đang viết cho khách hàng,độc giả,người dùng đọc chứ không phải seoer khác đọc nên không cần giải thích đây là bài viết seo  
    - Ngành viết về dịch vụ vận tải hành khách như grab , mai linh, vinasun , xanh sm ,...
-   - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh để viết chuyên sâu có thể sử dụng mỗi địa phương làm 1 tiêu đề phụ
-   - Có ví dụ thực tế, số liệu, và nghiên cứu liên quan.
-   - nếu cần sử dụng thêm icon phù hợp
-   - Dùng các thương hiệu tương tự như XanhSM, Grab, Be, Vinasun để phân tích nội dung.
+   - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh để viết chuyên sâu tự nhiên có thể sử dụng mỗi địa phương làm 1 tiêu đề phụ
+   - nếu cần sử dụng thêm icon phù hợp ,ví dụ thực tế, số liệu, và nghiên cứu liên quan.
+   - trong nội dung nếu có thể sử dụng bảng thì nên sử dụng bảng cho dữ liệu sinh động mang lại nội dung sạch
    - Một số thông tin su dung trong content:
       + Số điện thoại 0327883039
       + Website: https://taxinhanh247.pro.vn
       + Có thể đặt xe qua biểu mẫu trong website ( nhap diem don, diem den, loai xe , so dien thoai )
    - nếu có thể hãy sử dụng bảng giá cước tham khảo   
     `,
-    numberWord: "3000-4000",
+    numberWord: "3000-3500",
   },
   "datxenhanh-24h.pro.vn": {
     DATABASE_URI: process.env.MONGODB_URI_DATXENHANH_24H_PRO_VN,
