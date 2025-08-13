@@ -29,13 +29,14 @@ Từ khóa chính: "${keyword}"
 Trả về JSON:
 {
   "title": "Tiêu đề chứa từ khóa chinh",
-  "description": "Mô tả ngắn 155-160 ký tự chứa từ khóa",
+  "description": "Mô tả ngắn 155-160 ký tự và liên quan đến từ khóa chính",
   "tags": ["tag1", "tag2", "tag3"],
   "slug": "tieu-de-chua-tu-khoa-chinh",
   "outline": ["outline", "outline", "outline", "..."]
 }
 ${promptCustom || ""}
 -tags phải liên quan đến từ khóa chính ví dụ grab đồng nai sẽ có tag ["grab biên hòa","grab long thành","đặt taxi vinasun đồng nai"
+-slug được tạo thành từ từ khóa ${keyword} ví dụ grab xe máy có slug grab-xe-may
 Chỉ trả JSON hợp lệ. không trả thêm bất cữ dữ liệu nào khác
 `;
 }

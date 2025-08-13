@@ -59,7 +59,6 @@ const configMap = {
     FRONTEND_NAME: "taxinhanh247.pro.vn",
     DOMAIN: process.env.DOMAIN_TAXINHANH,
     PROMPT: `Nội dung phải CHUYÊN SÂU:
-   - bài viết dài khoảng 4000 - 4500 từ
    - Ngành viết về dịch vụ đặt xe : xe ôm , taxi , giao hàng
    - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh để viết chuyên sâu có thể sử dụng mỗi địa phương làm 1 tiêu đề phụ
    - Có ví dụ thực tế, số liệu, và nghiên cứu liên quan.
@@ -70,7 +69,7 @@ const configMap = {
       + Có thể đặt xe qua biểu mẫu trong website ( nhap diem don, diem den, loai xe , so dien thoai )
    - nếu có thể hãy sử dụng bảng giá cước tham khảo   
     `,
-    numberWord: "3000-4500",
+    numberWord: "3000-4000",
   },
   "datxenhanh-24h.pro.vn": {
     DATABASE_URI: process.env.MONGODB_URI_DATXENHANH_24H_PRO_VN,
@@ -93,7 +92,7 @@ const configMap = {
       + Có thể đặt xe qua biểu mẫu trong website ( nhap diem don, diem den, loai xe , so dien thoai )
    - nếu có thể hãy sử dụng bảng giá cước tham khảo   
     `,
-    numberWord: "3000-4500",
+    numberWord: "3000-4000",
   },
 };
 export default configMap;
