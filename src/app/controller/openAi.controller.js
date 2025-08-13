@@ -32,7 +32,7 @@ Trả về JSON:
   "description": "Mô tả ngắn 155-160 ký tự chứa từ khóa",
   "tags": ["tag1", "tag2", "tag3"],
   "slug": "slug-chua-tu-khoa",
-  "outline": ["Mục 1", "Mục 2", "Mục 3", "..."]
+  "outline": ["outline", "outline", "outline", "..."]
 }
 ${promptCustom || ""}
 -tags phải liên quan đến từ khóa chính ví dụ grab đồng nai sẽ có tag ["grab biên hòa","grab long thành","đặt taxi vinasun đồng nai"
@@ -52,7 +52,7 @@ Outline:
 ${outline.map((title, i) => `${i + 1}. ${title}`).join("\n")}
 
 Yêu cầu:
-- Mỗi mục 100 - 500 từ, thẻ H2/H3 rõ ràng.
+- Mỗi mục 100 - 300 từ, thẻ H2/H3 rõ ràng.
 - tổng thể dữ liệu dữ liệu trả về không vượt quá ${numberWord} từ
 - Nội dung khác nhau, không trùng lặp.
 - Chèn icon nếu phù hợp.
@@ -60,7 +60,7 @@ Yêu cầu:
 - Trả về JSON dạng:
 {
   "sections": [
-    {"title": "Mục 1", "content": "<h2>...</h2><p>...</p>"},
+    {"title": "outline", "content": "<h2>...</h2><p>...</p>"},
     ...
   ]
 }
