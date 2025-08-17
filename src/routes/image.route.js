@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import checkToken from "../middleware/checkToken.js";
-import ImageController from "../app/controller/image.controller.js";
+import ImageController from "../app/controllers/image.controller.js";
 // Tạo thư mục lưu trữ ảnh nếu chưa tồn tại
 import { fileURLToPath } from "url";
 import { CloudinaryStorage } from "multer-storage-cloudinary";

@@ -1,6 +1,11 @@
 import express from "express";
 const router = express.Router();
-import OpenAiController from "../app/controller/openAi.controller.js";
+import OpenAiController from "../app/controllers/openAi.controller.js";
+import Auth from "../middleware/checkToken.js";
 
-router.post("/openAi/create/prompt/post", OpenAiController.generatePost);
+router.post(
+  "/openAi/create/prompt/post",
+  Auth.verifyAdmin,
+  OpenAiController.generatePost
+);
 export default router;

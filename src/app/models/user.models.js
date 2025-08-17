@@ -1,4 +1,4 @@
-// models/User.js
+// models/user.model.js
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, default: "" },
     fullname: { type: String, default: "" },
     isVerified: { type: Boolean, default: false },
+    balance: { type: Number, default: 0 },
   },
   {
     timestamps: true,

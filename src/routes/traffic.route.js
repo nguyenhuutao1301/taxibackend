@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import TrafficController from "../app/controller/traffic.controller.js";
+import TrafficController from "../app/controllers/traffic.controller.js";
 
 router.post("/traffic/create/tracking", TrafficController.createTraffic);
 router.get("/traffic/by-id", TrafficController.getTrafficById);

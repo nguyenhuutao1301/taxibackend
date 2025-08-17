@@ -7,6 +7,7 @@ import bookingRoute from "./order.route.js";
 import traffic from "./traffic.route.js";
 import indexGoogle from "./google.route.js";
 import openAi from "./openAi.route.js";
+import setting from "./setting.route.js";
 
 function route(app) {
   app.use("/api", postRoute);
@@ -19,5 +20,6 @@ function route(app) {
   app.use("/api", traffic);
   app.use("/api", indexGoogle);
   app.use("/api", openAi);
+  app.use("/api", setting);
 }
 export default route;

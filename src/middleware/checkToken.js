@@ -1,25 +1,25 @@
-import dotenv from "dotenv";
-dotenv.config();
-
+import { getUserModel } from "../app/models/user.models.js";
 import jwt from "jsonwebtoken";
 
 const checkToken = {
-  verifyUser: (req, res, next) => {
-    const config = req.app.locals.config;
-    const JWT_SECRET = config.JWT_SECRET;
-    const token = req.headers.authorization || req.headers.token;
-    if (token) {
-      const accessToken = token.split(" ")[1];
-      jwt.verify(accessToken, JWT_SECRET, (err, user) => {
-        if (err) {
-          console.error("Token verification error:", err);
-          return res.status(403).json({ message: "Token is not valid" });
-        }
-        req.user = user;
-        next();
-      });
-    } else {
-      return res.status(401).json({ message: "You're not authenticated" });
+  verifyUser: async (req, res, next) => {
+    const User = getUserModel(req.db);
+    const { JWT_SECRET } = req.app.locals.config;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Không có token" });
+    }
+    const token = authHeader.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const user = await User.findById(decoded.userId);
+      if (!user) {
+        return res.status(401).json({ message: "Token không hợp lệ" });
+      }
+      req.user = user; // gắn thông tin user vào request
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: "Token không hợp lệ" });
     }
   },
 
