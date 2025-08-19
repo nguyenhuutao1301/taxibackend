@@ -9,6 +9,7 @@ const transactionSchema = new mongoose.Schema({
     enum: ["ai_write", "deposit", "refund"],
     required: true,
   },
+  meta: { type: mongoose.Schema.Types.Mixed },
   createdAt: { type: Date, default: Date.now },
 });
 

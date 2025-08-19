@@ -10,7 +10,6 @@ const configMap = {
     HOST: process.env.HOST,
     EMAIL_USER: process.env.EMAIL_USER_LOCAL,
     EMAIL_PASS: process.env.EMAIL_PASS_LOCAL,
-    FRONTEND_NAME: "local",
     DOMAIN: process.env.DOMAIN,
     PROMPT: `Nội dung phải CHUYÊN SÂU:
    - Ngành viết về dịch vụ đặt xe : xe ôm , taxi , giao hàng
@@ -33,7 +32,6 @@ const configMap = {
     HOST: process.env.HOST,
     EMAIL_USER: process.env.EMAIL_USER_DUYHAI,
     EMAIL_PASS: process.env.EMAIL_PASS_DUYHAI,
-    FRONTEND_NAME: "duyhaiweb",
     DOMAIN: process.env.DOMAIN_DUYHAI,
     PROMPT: `Nội dung phải CHUYÊN SÂU:
    - Ngành viết về dịch vụ đặt xe : xe ôm , taxi , giao hàng
@@ -56,30 +54,21 @@ const configMap = {
     HOST: process.env.HOST,
     EMAIL_USER: process.env.EMAIL_USER_TAXINHANH,
     EMAIL_PASS: process.env.EMAIL_PASS_TAXINHANH,
-    FRONTEND_NAME: "taxinhanh247.pro.vn",
     DOMAIN: process.env.DOMAIN_TAXINHANH,
     PROMPT: `Nội dung phải CHUYÊN SÂU:
-<<<<<<< HEAD
    - outline và nội dung phải (liên quan) đến từ khóa chính và sử dụng ngôn từ tự nhiên
    - không sử dụng nội dung kiểu như mô tả (đây là nội dung seo) vì bạn đang viết cho khách hàng,độc giả,người dùng đọc chứ không phải seoer khác đọc nên không cần giải thích đây là bài viết seo  
    - Ngành viết về dịch vụ vận tải hành khách như grab , mai linh, vinasun , xanh sm ,...
    - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh để viết chuyên sâu tự nhiên có thể sử dụng mỗi địa phương làm 1 tiêu đề phụ
    - nếu cần sử dụng thêm icon phù hợp ,ví dụ thực tế, số liệu, và nghiên cứu liên quan.
    - trong nội dung nếu có thể sử dụng bảng thì nên sử dụng bảng cho dữ liệu sinh động mang lại nội dung sạch
-=======
-   - Ngành viết về dịch vụ vận tải hành khách như grab , mai linh, vinasun , xanh sm ,...
-   - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh để viết chuyên sâu có thể sử dụng mỗi địa phương làm 1 tiêu đề phụ
-   - Có ví dụ thực tế, số liệu, và nghiên cứu liên quan.
-   - nếu cần sử dụng thêm icon phù hợp
-   - Dùng các thương hiệu tương tự như XanhSM, Grab, Be, Vinasun để phân tích nội dung.
->>>>>>> 7c3e5e7fd614507132c13207957ead7732294aca
-   - Một số thông tin su dung trong content:
+   - Một số thông tin su dung:
       + Số điện thoại 0327883039
       + Website: https://taxinhanh247.pro.vn
       + Có thể đặt xe qua biểu mẫu trong website ( nhap diem don, diem den, loai xe , so dien thoai )
    - nếu có thể hãy sử dụng bảng giá cước tham khảo   
+   - viết không dưới 2000 từ và không vượt quá 3500 từ
     `,
-    numberWord: "3000-3500",
   },
   "datxenhanh-24h.pro.vn": {
     DATABASE_URI: process.env.MONGODB_URI_DATXENHANH_24H_PRO_VN,
@@ -89,7 +78,6 @@ const configMap = {
     HOST: process.env.HOST,
     EMAIL_USER: process.env.EMAIL_USER_DATXENHANH_24H_PRO_VN,
     EMAIL_PASS: process.env.EMAIL_PASS_DATXENHANH_24H_PRO_VN,
-    FRONTEND_NAME: "datxenhanh-24h.pro.vn",
     DOMAIN: process.env.DOMAIN_DATXENHANH_24H_PRO_VN,
     PROMPT: `Nội dung phải CHUYÊN SÂU:
    - Ngành viết về dịch vụ vận tải hành khách như grab , bee, vinasun , xanh sm ,...

@@ -6,6 +6,6 @@ import Auth from "../middleware/checkToken.js";
 router.post(
   "/openAi/create/prompt/post",
   Auth.verifyAdmin,
-  OpenAiController.generatePost
+  OpenAiController.create
 );
 export default router;
