@@ -207,45 +207,37 @@ class OpenAiController {
     const cost = 4500;
     const Transaction = getTransaction(req.db);
 
-    // Lấy config từ server
     const { DOMAIN: domain, PROMPT: promptCustom } =
       req.app.locals.config || {};
-
-    // Validate input trước khi trừ tiền
     const { keyword } = req.body;
+
     if (!keyword || !domain) {
       return res.status(400).json({ message: "Thiếu keyword hoặc domain" });
     }
 
     try {
-      const user = req.user; // đã được middleware checkToken.verifyUser gắn vào
+      const user = req.user;
 
       if (user.balance < cost) {
         return res.status(400).json({ message: "Số dư không đủ" });
       }
-      // 1️⃣ Tạo description
-      const descriptionPrompt = descriptionbuild(keyword);
-      const description = await callGeminiAi(descriptionPrompt);
 
-      // 2 tạo ouline
-      const ouitlinePrompt = outlinebuild(keyword);
-      const outline = await callGeminiAi(ouitlinePrompt);
+      // 🔹 Tạo dữ liệu AI trước khi vào transaction
+      const [description, outline, slug, tags] = await Promise.all([
+        callGeminiAi(descriptionbuild(keyword)),
+        callGeminiAi(outlinebuild(keyword)),
+        callGeminiAi(slugbuild(keyword)),
+        callGeminiAi(tagsbuild(keyword)),
+      ]);
 
-      // 3 .slug
-      const slugPrompt = slugbuild(keyword);
-      const slug = await callGeminiAi(slugPrompt);
-
-      // 4 tags
-      const tagPrompt = tagsbuild(keyword);
-      const tags = await callGeminiAi(tagPrompt);
       const tagsArr = normalizeTags(tags);
+      const content = await callGPT(contentbuild(outline, promptCustom));
 
-      // Bắt đầu MongoDB session
+      // 🔹 Sau khi có kết quả AI -> mới bắt đầu transaction
       const session = await req.db.startSession();
       session.startTransaction();
 
       try {
-        // Trừ tiền và ghi log giao dịch trong transaction
         user.balance -= cost;
         await user.save({ session });
 
@@ -261,49 +253,31 @@ class OpenAiController {
           { session }
         );
 
-        // 4. content
-        const contentPrompt = contentbuild(outline, promptCustom);
-        const content = await callGPT(contentPrompt);
-        // Commit transaction khi tất cả đã OK
         await session.commitTransaction();
-
-        // End session sau commit
         session.endSession();
 
-        // Trả kết quả
         return res.status(200).json({
           message: "Tạo bài viết thành công",
           balance: user.balance,
           result: {
             title: keyword,
-            description: description,
+            description,
             tags: tagsArr,
-            slug: slug,
-            content: content,
+            slug,
+            content,
           },
           success: true,
         });
-      } catch (errInner) {
-        // Nếu đang trong transaction => rollback
-        if (session.inTransaction && session.inTransaction()) {
-          try {
-            await session.abortTransaction();
-          } catch (e) {
-            console.error("Lỗi khi abortTransaction:", e);
-          }
+      } catch (errTx) {
+        if (session.inTransaction()) {
+          await session.abortTransaction();
         }
-        // Always end session
-        try {
-          session.endSession();
-        } catch (e) {
-          console.error("Lỗi khi endSession:", e);
-        }
+        session.endSession();
 
-        console.error("Lỗi trong generatePost:", errInner);
-        return res.status(500).json({
-          message: "Lỗi tạo bài viết",
-          error: errInner.message,
-        });
+        console.error("Lỗi trong transaction:", errTx);
+        return res
+          .status(500)
+          .json({ message: "Lỗi tạo bài viết", error: errTx.message });
       }
     } catch (error) {
       console.error("Lỗi server generatePost:", error);
