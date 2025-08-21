@@ -11,22 +11,22 @@ async function sendDiscordMessage({
 }) {
   const maps =
     lat && lon
-      ? `https://www.google.com/maps/place/${lat},${lon}`
-      : "không lấy được vị trí";
+      ? `[Google Maps](https://www.google.com/maps/place/${lat},${lon})`
+      : "không được phép lấy vị trí";
   return axios.post(DISCORD_WEBHOOK_URL, {
     embeds: [
       {
         title: `👤 Truy cập từ ${referrer || "Trực tiếp"}`,
         color: 3447003,
         fields: [
-          { name: "🌐 IP", value: `\`${ip}\``, inline: true },
+          { name: "🌐 IP :", value: ip, inline: true },
           {
             name: "📍 Vị trí",
-            value: `[Google Maps](${maps})`,
+            value: maps,
             inline: true,
           },
-          { name: "💻 Thiết bị", value: `${device}`, inline: true },
-          { name: "🌍 Trình duyệt", value: `${browser}`, inline: true },
+          { name: "💻 Thiết bị", value: device, inline: true },
+          { name: "🌍 Trình duyệt", value: browser, inline: true },
           { name: "🔍 User-Agent", value: userAgent || "unknown" },
         ],
         timestamp: new Date(),

@@ -6,6 +6,7 @@ class TrafficController {
   createTraffic = async (req, res) => {
     const config = req.app.locals.config;
     const Traffic = getTrafficModel(req.db);
+    const ipBot = ["72.14.199"];
     try {
       const { lat, lon, referrer, userAgent, visitorId } = req.body || {};
 
@@ -23,7 +24,16 @@ class TrafficController {
 
       const isBotUser = isbot(userAgent || "");
       const existing = await Traffic.findOne({ visitorId });
-
+      function isIpBlocked(ip, blocked) {
+        return blocked.some((rule) => {
+          // Nếu rule là prefix (không đủ 4 block), thì check startsWith
+          if (rule.split(".").length < 4) {
+            return ip.startsWith(rule + ".");
+          }
+          // Nếu đủ 4 block thì check exact
+          return ip === rule;
+        });
+      }
       if (existing) {
         existing.times += 1;
         existing.ref = referrer ?? "/";
@@ -31,14 +41,13 @@ class TrafficController {
         existing.historyTimestamps.push(new Date());
         existing.historyLocation.push(
           lat && lon
-            ? `https://www.google.com/place/${lat},${lon}`
+            ? `https://www.google.com/maps/place/${lat},${lon}`
             : "không lấy được vị trí"
         );
         existing.historyRef.push(referrer || "unknown");
         await existing.save();
-        console.log("🟡 Visitor đã tồn tại - Cập nhật traffic:", visitorId);
 
-        if (!isBotUser) {
+        if (!isBotUser || isIpBlocked(ip, ipBot)) {
           await sendDiscordMessage({
             ip,
             lat,
@@ -76,11 +85,9 @@ class TrafficController {
       };
 
       const newTraffic = new Traffic(data);
-      const saved = await newTraffic.save();
+      await newTraffic.save();
 
-      console.log("🟢 New visitor saved:", saved);
-
-      if (!isBotUser) {
+      if (!isBotUser || isIpBlocked(ip, ipBot)) {
         await sendDiscordMessage({
           ip,
           lat,
@@ -93,12 +100,10 @@ class TrafficController {
         });
       }
 
-      return res
-        .status(200)
-        .json({ message: "New visitor tracked", newTraffic: saved });
+      return res.status(200).json({ message: "New visitor tracked" });
     } catch (err) {
       console.error("❌ Error tracking traffic:", err);
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     }
   };
   getTraffic = async (req, res) => {
