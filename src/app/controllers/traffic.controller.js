@@ -47,7 +47,7 @@ class TrafficController {
         existing.historyRef.push(referrer || "unknown");
         await existing.save();
 
-        if (!isBotUser || isIpBlocked(ip, ipBot)) {
+        if (!isBotUser || !isIpBlocked(ip, ipBot)) {
           await sendDiscordMessage({
             ip,
             lat,
@@ -87,7 +87,7 @@ class TrafficController {
       const newTraffic = new Traffic(data);
       await newTraffic.save();
 
-      if (!isBotUser || isIpBlocked(ip, ipBot)) {
+      if (!isBotUser || !isIpBlocked(ip, ipBot)) {
         await sendDiscordMessage({
           ip,
           lat,
