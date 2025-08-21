@@ -136,7 +136,7 @@ class PostController {
     const Post = getPostModel(req.db);
     try {
       const query = req.query.q?.trim();
-      const limit = Math.max(1, parseInt(req.query.limit, 10) || 5);
+      const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
 
       // Validate query
       if (!query) {
@@ -151,10 +151,7 @@ class PostController {
 
       // Search in title and content with case-insensitive regex
       const posts = await Post.find({
-        $or: [
-          { title: { $regex: sanitizedQuery, $options: "i" } },
-          { content: { $regex: sanitizedQuery, $options: "i" } },
-        ],
+        $or: [{ title: { $regex: sanitizedQuery, $options: "i" } }],
       })
         .select("title slug") // Exclude version key
         .limit(limit)
