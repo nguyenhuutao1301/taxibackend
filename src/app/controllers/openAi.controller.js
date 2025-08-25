@@ -224,8 +224,8 @@ class OpenAiController {
 
       // 🔹 Tạo dữ liệu AI trước khi vào transaction
       const [description, outline, slug, tags] = await Promise.all([
-        callGeminiAi(descriptionbuild(keyword)),
-        callGeminiAi(outlinebuild(keyword)),
+        callGPT(descriptionbuild(keyword)),
+        callGPT(outlinebuild(keyword)),
         callGeminiAi(slugbuild(keyword)),
         callGeminiAi(tagsbuild(keyword)),
       ]);
