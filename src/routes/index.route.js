@@ -8,6 +8,7 @@ import traffic from "./traffic.route.js";
 import indexGoogle from "./google.route.js";
 import openAi from "./openAi.route.js";
 import setting from "./setting.route.js";
+import dashboardRoute from "./dashboard.route.js";
 
 function route(app) {
   app.use("/api", postRoute);
@@ -21,5 +22,6 @@ function route(app) {
   app.use("/api", indexGoogle);
   app.use("/api", openAi);
   app.use("/api", setting);
+  app.use("/api", dashboardRoute);
 }
 export default route;
