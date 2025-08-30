@@ -25,8 +25,8 @@ const bookingSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
+    visitorId: { type: String, index: true }, // Lưu trữ visitorId nếu người dùng chưa đăng nhập
     driverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Driver",
@@ -62,15 +62,3 @@ const bookingSchema = new mongoose.Schema(
 export function getOrderModel(connection) {
   return connection.model("Booking", bookingSchema);
 }
-
-// | Trường                                    | Mô tả                                                                                             |
-// | ----------------------------------------- | ------------------------------------------------------------------------------------------------- |
-// | `driverId`                                | Nếu bạn có hệ thống tài xế, liên kết đặt xe với tài xế cụ thể.                                    |
-// | `status`                                  | Trạng thái của booking (chờ xác nhận, đã chấp nhận, đang di chuyển, đã hoàn thành, đã hủy, v.v.). |
-// | `price`                                   | Chi phí tạm tính hoặc cuối cùng của chuyến đi.                                                    |
-// | `estimatedDistanceKm`, `estimatedTimeMin` | Ước lượng khoảng cách và thời gian (từ Google Maps hoặc API).                                     |
-// | `pickupTime`                              | Thời gian người dùng chọn để đón.                                                                 |
-// | `completedAt`                             | Thời điểm hoàn tất chuyến đi.                                                                     |
-// | `paymentStatus`, `paymentMethod`          | Nếu có thanh toán online (chuyển khoản, ví điện tử, tiền mặt).                                    |
-// | `cancelReason`                            | Lý do hủy chuyến (nếu có).                                                                        |
-// | `rating`, `feedback`                      | Đánh giá và phản hồi từ khách hàng hoặc tài xế.                                                   |

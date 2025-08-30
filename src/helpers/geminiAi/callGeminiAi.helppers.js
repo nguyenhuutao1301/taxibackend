@@ -1,21 +1,41 @@
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import extractData from "./extractData.helppers.js";
+import { geminiApiKeys, ApiKeyManager } from "../../configs/apiKeys.js";
 dotenv.config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-// helpers/extractData.js
+const keyManager = new ApiKeyManager(geminiApiKeys);
 
-// Hàm gọi Gemini AI
 export default async function callGeminiAi(prompt) {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    // Gemini trả về text trong object response
-    const res = extractData(result.response.text());
-    return res;
-  } catch (error) {
-    console.error("Lỗi khi gọi Gemini AI:", error);
-    throw error;
+  let attempts = 0;
+  const maxAttempts = geminiApiKeys.length;
+
+  while (attempts < maxAttempts) {
+    try {
+      const currentKey = keyManager.getNextValidKey();
+      const genAI = new GoogleGenerativeAI(currentKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+      const result = await model.generateContent(prompt);
+      const res = extractData(result.response.text());
+      return res;
+
+    } catch (error) {
+      attempts++;
+      console.error(`Attempt ${attempts} failed with key ${keyManager.getCurrentKey()}`);
+      
+      if (error.message.includes("quota") || error.message.includes("rate limit")) {
+        keyManager.markKeyAsFailed(keyManager.getCurrentKey());
+        keyManager.rotateKey();
+        
+        if (attempts < maxAttempts) {
+          continue;
+        }
+      }
+      
+      throw error;
+    }
   }
+
+  throw new Error("All API keys have been exhausted");
 }

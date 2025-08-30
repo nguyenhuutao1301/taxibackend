@@ -1,22 +1,10 @@
 import express from "express";
+import Auth from "../middleware/checkToken.js";
+import Order from "../app/controllers/order.controller.js";
 const router = express.Router();
-import checkToken from "../middleware/checkToken.js";
-import OrtherControler from "../app/controllers/order.controller.js";
-router.post("/booking/discord/create", OrtherControler.createBooking);
-router.post("/booking/get-all/history", OrtherControler.getHistoryBooking);
-router.get(
-  "/booking/get-all",
-  checkToken.verifyAdmin,
-  OrtherControler.getAllBooking
-);
-router.delete(
-  "/booking/delete",
-  checkToken.verifyAdmin,
-  OrtherControler.deleteBookingById
-);
-router.put(
-  "/booking/update",
-  checkToken.verifyAdmin,
-  OrtherControler.updateBooking
-);
+router.post("/booking/discord/create", Order.createOrder);
+router.post("/booking/get-all/history", Order.readOrder);
+router.get("/booking/get-all", Auth.verifyAdmin, Order.readAllOrder);
+router.delete("/booking/delete", Auth.verifyAdmin, Order.deleteOrderById);
+router.put("/booking/update", Auth.verifyAdmin, Order.updateOrder);
 export default router;

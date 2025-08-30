@@ -2,12 +2,13 @@ import { getOrderModel } from "../models/order.models.js";
 import { sendOrderToDiscord as sendToDiscord } from "../../helpers/discord/index.js";
 
 class OrtherController {
-  createBooking = async (req, res) => {
+  createOrder = async (req, res) => {
     const Booking = getOrderModel(req.db);
     const config = req.app.locals.config;
     const DISCORD_WEBHOOK_URL = config.DISCORD_WEBHOOK;
+
     try {
-      const { userId, ...dataBooking } = req.body;
+      const { userId, visitorId, ...dataBooking } = req.body;
       const {
         addressFrom,
         addressTo,
@@ -15,35 +16,70 @@ class OrtherController {
         phoneNumber,
         additionalInfo,
       } = dataBooking;
+
       const dataSend = { ...dataBooking, DISCORD_WEBHOOK_URL };
-      if (!addressFrom || !addressTo || !serviceType || !phoneNumber) {
+
+      // Check thông tin bắt buộc
+      if (!addressFrom || !phoneNumber) {
         return res
           .status(400)
           .json({ message: "error", err: "Thiếu thông tin bắt buộc." });
       }
-      console.log(dataSend);
-      await sendToDiscord(dataSend); // gửi 1 lần duy nhất
 
-      // Nếu không đăng nhập => không lưu vào DB
+      // Gửi Discord (1 lần duy nhất)
+      await sendToDiscord(dataSend);
+
+      // Nếu chưa đăng nhập → lưu bằng visitorId
       if (!userId) {
+        if (!visitorId) {
+          return res.status(400).json({
+            message: "error",
+            err: "Thiếu visitorId",
+          });
+        }
+
+        const newBooking = new Booking({
+          ...dataBooking,
+          visitorId,
+        });
+
+        const savedBooking = await newBooking.save();
+
         return res.status(201).json({
           message: "success",
-          err: "",
+          booking: savedBooking,
         });
       }
 
-      // Nếu có user => lưu thêm userId
-      const newBooking = new Booking({
-        ...dataBooking,
-        userId,
-      });
+      // Nếu có userId → kiểm tra xem visitorId đã có record chưa
+      let existingBooking = null;
+      if (visitorId) {
+        existingBooking = await Booking.findOne({ visitorId });
+      }
 
-      const savedBooking = await newBooking.save();
+      if (existingBooking) {
+        // Nếu tồn tại visitorId thì cập nhật sang userId
+        existingBooking.userId = userId;
+        await existingBooking.save();
 
-      return res.status(201).json({
-        message: "success",
-        booking: savedBooking,
-      });
+        return res.status(200).json({
+          message: "success",
+          booking: existingBooking,
+        });
+      } else {
+        // Nếu chưa có visitorId thì tạo mới với userId
+        const newBooking = new Booking({
+          ...dataBooking,
+          userId,
+        });
+
+        const savedBooking = await newBooking.save();
+
+        return res.status(201).json({
+          message: "success",
+          booking: savedBooking,
+        });
+      }
     } catch (error) {
       console.error("Lỗi tạo đơn đặt xe:", error);
       return res
@@ -51,24 +87,42 @@ class OrtherController {
         .json({ message: "error", err: "Lỗi server, vui lòng thử lại sau." });
     }
   };
+
   // [POST] /booking/get-all/history
-  getHistoryBooking = async (req, res) => {
+  readOrder = async (req, res) => {
     const Booking = getOrderModel(req.db);
     try {
-      const { userId } = req.body;
-      if (!userId) {
+      const { userId, visitorId } = req.body;
+
+      if (!userId && !visitorId) {
         return res.status(400).json({ message: "error", err: "invalid Id" });
       }
-      const history = await Booking.find({ userId })
-        .select("addressFrom addressTo createdAt serviceType status _id rating")
+
+      let query = {};
+
+      // Nếu có cả userId và visitorId thì lấy dữ liệu gộp
+      if (userId && visitorId) {
+        query = { $or: [{ userId }, { visitorId }] };
+      } else if (userId) {
+        query = { userId };
+      } else {
+        query = { visitorId };
+      }
+
+      const history = await Booking.find(query)
+        .select(
+          "addressFrom addressTo createdAt serviceType status _id rating visitorId userId"
+        )
         .sort({ createdAt: -1 });
 
       return res.status(200).json({ message: "success", err: "", history });
     } catch (error) {
+      console.error("Lỗi lấy lịch sử đặt xe:", error);
       return res.status(500).json({ message: "error", err: "server error" });
     }
   };
-  getAllBooking = async (req, res) => {
+
+  readAllOrder = async (req, res) => {
     const Booking = getOrderModel(req.db);
     try {
       const result = await Booking.find({})
@@ -91,7 +145,7 @@ class OrtherController {
     }
   };
   // [DELETE] /booking/delete?id=${id}
-  deleteBookingById = async (req, res) => {
+  deleteOrderById = async (req, res) => {
     const Booking = getOrderModel(req.db);
     const _id = req.query.id;
     if (!_id) {
@@ -119,7 +173,7 @@ class OrtherController {
     }
   };
   // [PUT] /booking/update?id=${id}
-  updateBooking = async (req, res) => {
+  updateOrder = async (req, res) => {
     const Booking = getOrderModel(req.db);
     const _id = req.query.id;
     if (!_id) {
