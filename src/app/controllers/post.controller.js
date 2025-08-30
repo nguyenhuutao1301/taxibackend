@@ -406,5 +406,93 @@ class PostController {
       });
     }
   };
+  findAndReplaceData = async (req, res) => {
+    const Post = getPostModel(req.db);
+    try {
+      const { find, replace, fields } = req.body;
+
+      // Validate input
+      if (!find || !replace || !fields || !fields.length) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Từ khóa tìm kiếm, từ thay thế và ít nhất một trường là bắt buộc" 
+        });
+      }
+
+      // Chỉ cho phép update các trường hợp lệ
+      const allowedFields = ['title', 'description', 'content', 'authorName'];
+      const validFields = fields.filter(field => allowedFields.includes(field));
+
+      if (!validFields.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Không có trường hợp lệ để cập nhật"
+        });
+      }
+
+      // Tạo update object
+      const update = {};
+      validFields.forEach(field => {
+        update[field] = {
+          $replaceAll: {
+            input: `$${field}`,
+            find,
+            replacement: replace
+          }
+        };
+      });
+
+      // Preview changes first
+      const previewDocs = await Post.find({
+        $or: validFields.map(field => ({
+          [field]: { $regex: find, $options: 'i' }
+        }))
+      }).select(validFields.join(' '));
+
+      // Nếu không có documents nào bị ảnh hưởng
+      if (!previewDocs.length) {
+        return res.status(200).json({
+          success: true,
+          message: "Không tìm thấy nội dung cần thay thế",
+          affectedCount: 0
+        });
+      }
+
+      // Thực hiện update
+      const result = await Post.updateMany(
+        {
+          $or: validFields.map(field => ({
+            [field]: { $regex: find, $options: 'i' }
+          }))
+        },
+        [{ $set: update }]
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "Cập nhật thành công",
+        modifiedCount: result.modifiedCount,
+        affectedFields: validFields,
+        preview: previewDocs.map(doc => ({
+          id: doc._id,
+          changes: validFields.reduce((acc, field) => {
+            acc[field] = {
+              before: doc[field],
+              after: doc[field].replace(new RegExp(find, 'gi'), replace)
+            };
+            return acc;
+          }, {})
+        }))
+      });
+
+    } catch (error) {
+      console.error("Lỗi khi cập nhật bài viết:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi khi cập nhật bài viết",
+        error: error.message 
+      });
+    }
+  };
 }
 export default new PostController();

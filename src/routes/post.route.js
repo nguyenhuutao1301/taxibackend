@@ -14,7 +14,11 @@ router.get("/posts/by-id/:id", PostController.getPostById); // get post by id
 router.get("/posts/sitemap", PostController.getPostRenderSiteMap);
 // [POST] /api/posts
 router.post("/posts", checkadmin.verifyAdmin, PostController.createPosts); //crete new post
+router.put(
+  "/posts/put/find-and-replace",
 
+  PostController.findAndReplaceData
+);
 // [PUT] /api/posts/:id
 router.put("/posts/:id", checkadmin.verifyAdmin, PostController.updatePost); // update post
 // [DELETE] /api/posts/:id
@@ -27,4 +31,5 @@ router.patch(
   checkadmin.verifyUser,
   PostController.patchLikePostById
 );
+
 export default router;
