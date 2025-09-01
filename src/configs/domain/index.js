@@ -111,7 +111,7 @@ const configMap = {
       + Có thể đặt xe qua biểu mẫu trong website ( nhập điểm đón , điểm đến, loại xe , số điện thoại )
    - nếu có thể hãy sử dụng bảng giá cước tham khảo 
     `,
-    numberWord: "3000-4000",
+    numberWord: "2500-3500",
   },
 };
 export default configMap;

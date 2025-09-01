@@ -45,22 +45,24 @@ app.use((err, req, res, next) => {
     message: err.message || "Lỗi server",
   });
 });
-const allowedOrigins = [
-  "https://goixegiare.pro.vn",
-  "https://xegrabdongnai.pro.vn",
-  "https://taxifrontend.vercel.app",
-  "https://taxinhanh247.pro.vn",
-  "https://datxenhanh-24h.pro.vn",
-  "https://datxetietkiem.com",
-  "http://localhost:3000",
-  "https://taxisieure.com",
-];
+
 // CORS
 app.use(
   cors({
     origin: function (origin, callback) {
       // Cho phép khi không có origin (như từ cURL hoặc Postman)
       if (!origin) return callback(null, true);
+      const allowedOrigins = [
+        "https://goixegiare.pro.vn",
+        "https://xegrabdongnai.pro.vn",
+        "https://taxifrontend.vercel.app",
+        "https://taxinhanh247.pro.vn",
+        "https://datxenhanh-24h.pro.vn",
+        "https://datxetietkiem.com",
+        "http://localhost:3000",
+        "https://taxisieure.com",
+        "https://www.taxisieure.com",
+      ].filter(Boolean);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       } else {
@@ -68,6 +70,15 @@ app.use(
       }
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+    ],
+    optionsSuccessStatus: 200,
   })
 );
 
