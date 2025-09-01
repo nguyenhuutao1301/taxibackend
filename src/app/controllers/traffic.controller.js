@@ -24,16 +24,16 @@ class TrafficController {
 
       const isBotUser = isbot(userAgent || "");
       const existing = await Traffic.findOne({ visitorId });
+
       function isIpBlocked(ip, blocked) {
         return blocked.some((rule) => {
-          // Nếu rule là prefix (không đủ 4 block), thì check startsWith
           if (rule.split(".").length < 4) {
             return ip.startsWith(rule + ".");
           }
-          // Nếu đủ 4 block thì check exact
           return ip === rule;
         });
       }
+
       if (existing) {
         existing.times += 1;
         existing.ref = referrer ?? "/";
@@ -46,12 +46,19 @@ class TrafficController {
         );
         existing.historyRef.push(referrer || "unknown");
         await existing.save();
-        const lastTimestamp = existing.historyTimestamps.at(-1);
+
+        // Fix: Ensure lastTimestamp is a valid Date object
+        const lastTimestamp =
+          existing.historyTimestamps[existing.historyTimestamps.length - 1];
+        const timeSinceLastVisit =
+          lastTimestamp instanceof Date
+            ? Date.now() - lastTimestamp.getTime()
+            : 0;
 
         if (
           !isBotUser &&
           !isIpBlocked(ip, ipBot) &&
-          (!lastTimestamp || Date.now() - lastTimestamp.getTime() > 10000)
+          (!lastTimestamp || timeSinceLastVisit > 10000)
         ) {
           await sendDiscordMessage({
             ip,
@@ -65,7 +72,10 @@ class TrafficController {
           });
         }
 
-        return res.status(200).json({ message: "Visitor updated", existing });
+        return res.status(200).json({
+          message: "Visitor updated",
+          existing,
+        });
       }
       const data = {
         visitorId,
