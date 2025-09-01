@@ -53,6 +53,7 @@ const allowedOrigins = [
   "https://datxenhanh-24h.pro.vn",
   "https://datxetietkiem.com",
   "http://localhost:3000",
+  "https://taxisieure.com",
 ];
 // CORS
 app.use(
