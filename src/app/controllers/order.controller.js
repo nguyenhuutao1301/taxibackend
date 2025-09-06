@@ -125,11 +125,8 @@ class OrtherController {
   readAllOrder = async (req, res) => {
     const Booking = getOrderModel(req.db);
     try {
-      const result = await Booking.find({})
-        .populate("userId", "username")
-        .select(
-          "addressFrom addressTo serviceType userId status price createAt _id"
-        );
+      const result = await Booking.find({}).populate("userId", "username");
+
       return res.status(200).json({
         success: true,
         message: "success",
