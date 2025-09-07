@@ -1,16 +1,16 @@
 import express from "express";
 const router = express.Router();
-import authUser from "../app/controllers/user.controller.js";
-import checkToken from "../middleware/checkToken.js";
+import AuthCtl from "../app/controllers/user.controller.js";
+import Auth from "../middleware/checkToken.js";
 
-router.post("/user/register/send-otp", authUser.sendOtpRegisterIser);
-router.post("/login", authUser.loginUser);
-router.post("/register", authUser.registerUser);
-router.post("/refresh", authUser.refreshTokenUser);
-router.post("/logout", authUser.logoutUser);
-router.put("/user/update/:id", checkToken.verifyUser, authUser.updateUser);
-router.get("/user/get-all", checkToken.verifyAdmin, authUser.getAllUser);
-router.delete("/user", checkToken.verifyAdmin, authUser.deletedUser);
-router.get("/user", authUser.viewUser);
+router.post("/user/register/send-otp", AuthCtl.sendOtpRegisterIser);
+router.post("/login", AuthCtl.loginUser);
+router.post("/register", AuthCtl.registerUser);
+router.post("/refresh", AuthCtl.refreshTokenUser);
+router.post("/logout", AuthCtl.logoutUser);
+router.put("/user/update/:id", Auth.verifyUser, AuthCtl.updateUser);
+router.get("/user/get-all", Auth.verifyAdmin, AuthCtl.getAllUser);
+router.delete("/user", Auth.verifyAdmin, AuthCtl.deletedUser);
+router.get("/user", AuthCtl.viewUser);
 
 export default router;

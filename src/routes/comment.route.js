@@ -1,22 +1,14 @@
 import express from "express";
 const router = express.Router();
-import checkToken from "../middleware/checkToken.js";
+import Auth from "../middleware/checkToken.js";
 import CommentController from "../app/controllers/comment.controller.js";
 
 router.get("/comment/:postid", CommentController.getComment);
 router.post(
   "/comment/:postid",
-  checkToken.verifyUser,
+  Auth.verifyUser,
   CommentController.createComment
 );
-router.put(
-  "/comment/:id",
-  checkToken.verifyUser,
-  CommentController.changeComment
-);
-router.delete(
-  "/comment/:id",
-  checkToken.verifyUser,
-  CommentController.deleteComment
-);
+router.put("/comment/:id", Auth.verifyUser, CommentController.changeComment);
+router.delete("/comment/:id", Auth.verifyUser, CommentController.deleteComment);
 export default router;
