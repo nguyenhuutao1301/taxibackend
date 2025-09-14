@@ -82,6 +82,8 @@ const authUser = {
         return res.status(400).json({ message: "Email không tồn tại." });
       }
       const isPasswordValid = await bcrypt.compare(password, user.password);
+      console.log("Password input:", password);
+      console.log("Password in DB:", user.password);
       if (!isPasswordValid) {
         return res.status(400).json({ message: "Sai mật khẩu." });
       }
@@ -338,6 +340,125 @@ const authUser = {
     } catch (error) {
       console.log("err:", error);
       return res.status(500).json({ success: false, message: "lỗi server" });
+    }
+  },
+  sendOtpResetPassowrd: async (req, res) => {
+    const Otp = getOtpModel(req.db);
+    const User = getUserModel(req.db);
+    const { identifier } = req.body;
+    const config = req.app.locals.config; // lấy config theo domain
+    if (!identifier)
+      return res
+        .status(400)
+        .json({ success: false, error: "Email không được bỏ trống" });
+    const existingUser = await User.findOne({ email: identifier });
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Email này chưa được đăng kí !!!",
+      });
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 số
+    const expiresAt = new Date(
+      Date.now() + 1000 * 60 * Number(process.env.OTP_EXPIRE_MINUTES || 5) // ép kiểu number
+    );
+
+    try {
+      await Otp.findOneAndUpdate(
+        { email: identifier },
+        { code: otp, expiresAt },
+        { upsert: true, new: true }
+      );
+
+      await sendOtpEmail(identifier, otp, config);
+
+      return res.status(200).json({ success: true, message: "Đã gửi OTP" });
+    } catch (error) {
+      console.error("sendOtpResetPassword error:", error);
+      return res.status(500).json({ success: false, message: "Lỗi server" });
+    }
+  },
+  verifyOtp: async (req, res) => {
+    const Otp = getOtpModel(req.db);
+    try {
+      const { otp, identifier } = req.body;
+
+      const foundOtp = await Otp.findOne({ email: identifier });
+      if (!foundOtp)
+        return res
+          .status(400)
+          .json({ success: false, message: "OTP không tồn tại" });
+
+      if (foundOtp.expiresAt < Date.now())
+        return res
+          .status(400)
+          .json({ success: false, message: "OTP đã hết hạn" });
+
+      if (foundOtp.code !== otp)
+        return res
+          .status(400)
+          .json({ success: false, message: "OTP không đúng" });
+
+      return res.status(200).json({
+        success: true,
+        message: "Xác thực thành công",
+      });
+    } catch (error) {
+      console.error("verifyOtp error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server lỗi xác thực OTP, vui lòng thử lại",
+      });
+    }
+  },
+  resetPassword: async (req, res) => {
+    const Otp = getOtpModel(req.db);
+    const User = getUserModel(req.db);
+    try {
+      const { otp, identifier, newPassword } = req.body;
+
+      const existingUser = await User.findOne({ email: identifier });
+      if (!existingUser) {
+        return res.status(404).json({
+          success: false,
+          message: "Email này chưa được đăng kí !!!",
+        });
+      }
+
+      const foundOtp = await Otp.findOne({ email: identifier });
+      if (!foundOtp)
+        return res
+          .status(400)
+          .json({ success: false, message: "OTP không tồn tại" });
+
+      if (foundOtp.expiresAt < Date.now())
+        return res
+          .status(400)
+          .json({ success: false, message: "OTP đã hết hạn" });
+
+      if (foundOtp.code !== otp)
+        return res
+          .status(400)
+          .json({ success: false, message: "OTP không đúng" });
+
+      // ✅ Hash password mới và lưu vào user
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      existingUser.password = hashedPassword;
+      await existingUser.save();
+      console.log("Updated password:", hashedPassword);
+      // Có thể xoá OTP sau khi dùng
+      await Otp.deleteOne({ email: identifier });
+
+      return res.status(200).json({
+        success: true,
+        message: "Đặt lại mật khẩu thành công",
+      });
+    } catch (error) {
+      console.error("resetPassword error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server lỗi khi đặt lại mật khẩu",
+      });
     }
   },
 };

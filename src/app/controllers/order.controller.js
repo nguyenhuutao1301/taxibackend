@@ -95,6 +95,7 @@ class OrtherController {
       const { userId, visitorId } = req.body;
 
       if (!userId && !visitorId) {
+        console.log("invalid Id:", userId, visitorId);
         return res.status(400).json({ message: "error", err: "invalid Id" });
       }
 

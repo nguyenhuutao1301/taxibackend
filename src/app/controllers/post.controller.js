@@ -210,7 +210,7 @@ class PostController {
     }
     try {
       const post = await Post.findById(_id).exec();
-      console.log("post:", post);
+
       if (!post) {
         return res.status(404).json({ message: "not found" });
       }
@@ -239,6 +239,7 @@ class PostController {
   updatePost = async (req, res) => {
     const Post = getPostModel(req.db);
     const id = req.params.id;
+    const config = req.app.locals.config;
     if (!id) {
       return res.status(400).json({ message: "cant receive id blogs" });
     }
@@ -252,7 +253,24 @@ class PostController {
       Object.keys(blogUpdate).forEach(
         (key) => blogUpdate[key] === undefined && delete blogUpdate[key]
       );
-      await Post.findByIdAndUpdate(id, blogUpdate);
+      const updatedPost = await Post.findByIdAndUpdate(id, blogUpdate, {
+        new: true,
+      });
+      if (!updatedPost) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+
+      // Lấy slug từ bài viết vừa update
+      const slug = updatedPost.slug;
+
+      try {
+        await fetch(
+          `${config.DOMAIN}/api/revalidate?slug=${slug}&secret=${process.env.REVALIDATE_SECRET}`
+        );
+        console.log("Revalidate success for slug:", slug);
+      } catch (err) {
+        console.error("Revalidate error:", err);
+      }
       return res.json({
         message: "update thành công",
         blogUpdate: blogUpdate,
@@ -413,57 +431,60 @@ class PostController {
 
       // Validate input
       if (!find || !replace || !fields || !fields.length) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           success: false,
-          message: "Từ khóa tìm kiếm, từ thay thế và ít nhất một trường là bắt buộc" 
+          message:
+            "Từ khóa tìm kiếm, từ thay thế và ít nhất một trường là bắt buộc",
         });
       }
 
       // Chỉ cho phép update các trường hợp lệ
-      const allowedFields = ['title', 'description', 'content', 'authorName'];
-      const validFields = fields.filter(field => allowedFields.includes(field));
+      const allowedFields = ["title", "description", "content", "authorName"];
+      const validFields = fields.filter((field) =>
+        allowedFields.includes(field)
+      );
 
       if (!validFields.length) {
         return res.status(400).json({
           success: false,
-          message: "Không có trường hợp lệ để cập nhật"
+          message: "Không có trường hợp lệ để cập nhật",
         });
       }
 
       // Tạo update object
       const update = {};
-      validFields.forEach(field => {
+      validFields.forEach((field) => {
         update[field] = {
           $replaceAll: {
             input: `$${field}`,
             find,
-            replacement: replace
-          }
+            replacement: replace,
+          },
         };
       });
 
       // Preview changes first
       const previewDocs = await Post.find({
-        $or: validFields.map(field => ({
-          [field]: { $regex: find, $options: 'i' }
-        }))
-      }).select(validFields.join(' '));
+        $or: validFields.map((field) => ({
+          [field]: { $regex: find, $options: "i" },
+        })),
+      }).select(validFields.join(" "));
 
       // Nếu không có documents nào bị ảnh hưởng
       if (!previewDocs.length) {
         return res.status(200).json({
           success: true,
           message: "Không tìm thấy nội dung cần thay thế",
-          affectedCount: 0
+          affectedCount: 0,
         });
       }
 
       // Thực hiện update
       const result = await Post.updateMany(
         {
-          $or: validFields.map(field => ({
-            [field]: { $regex: find, $options: 'i' }
-          }))
+          $or: validFields.map((field) => ({
+            [field]: { $regex: find, $options: "i" },
+          })),
         },
         [{ $set: update }]
       );
@@ -473,24 +494,23 @@ class PostController {
         message: "Cập nhật thành công",
         modifiedCount: result.modifiedCount,
         affectedFields: validFields,
-        preview: previewDocs.map(doc => ({
+        preview: previewDocs.map((doc) => ({
           id: doc._id,
           changes: validFields.reduce((acc, field) => {
             acc[field] = {
               before: doc[field],
-              after: doc[field].replace(new RegExp(find, 'gi'), replace)
+              after: doc[field].replace(new RegExp(find, "gi"), replace),
             };
             return acc;
-          }, {})
-        }))
+          }, {}),
+        })),
       });
-
     } catch (error) {
       console.error("Lỗi khi cập nhật bài viết:", error);
-      res.status(500).json({ 
+      res.status(500).json({
         success: false,
         message: "Lỗi khi cập nhật bài viết",
-        error: error.message 
+        error: error.message,
       });
     }
   };
