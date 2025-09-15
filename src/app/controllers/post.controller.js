@@ -107,22 +107,46 @@ class PostController {
           .json({ success: false, message: "No valid tags provided." });
       }
 
-      // Get posts with specified fields using select
-      const postList = await Post.find({ tags: { $in: sanitizedTags } })
+      // Get posts matching tags
+      let postList = await Post.find({ tags: { $in: sanitizedTags } })
         .select("createdAt image.url title description authorName slug _id")
         .limit(limit)
         .sort({ createdAt: -1 })
         .lean();
 
-      // Check if posts were found
+      // Nếu số lượng chưa đủ -> lấy thêm random
+      if (!postList || postList.length < limit) {
+        const missing = limit - (postList?.length || 0);
+
+        // Lấy ngẫu nhiên các post khác, không trùng slug với post đã lấy
+        const excludedSlugs = postList.map((p) => p.slug);
+
+        const randomPosts = await Post.aggregate([
+          { $match: { slug: { $nin: excludedSlugs } } },
+          { $sample: { size: missing } },
+          {
+            $project: {
+              createdAt: 1,
+              "image.url": 1,
+              title: 1,
+              description: 1,
+              authorName: 1,
+              slug: 1,
+            },
+          },
+        ]);
+
+        postList = [...postList, ...randomPosts];
+      }
+
+      // Trường hợp cuối cùng vẫn không có bài nào
       if (!postList || postList.length === 0) {
         return res.status(404).json({
           success: false,
-          message: "No posts found matching the tags.",
+          message: "No posts found matching the tags or fallback.",
         });
       }
 
-      // Return posts
       res.status(200).json(postList);
     } catch (error) {
       console.error("Error in filterPost:", error);
@@ -131,6 +155,7 @@ class PostController {
         .json({ success: false, message: "Internal server error" });
     }
   };
+
   // [GET] /api/posts/find/query?q=query&limit=number find posts by query
   getPostByQuery = async (req, res) => {
     const Post = getPostModel(req.db);
