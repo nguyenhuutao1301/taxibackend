@@ -290,7 +290,7 @@ class PostController {
 
       try {
         await fetch(
-          `${config.DOMAIN}/api/revalidate?slug=${slug}&secret=${process.env.REVALIDATE_SECRET}`
+          `${config.DOMAIN}/api/revalidate/post?slug=${slug}&secret=${process.env.REVALIDATE_SECRET}`
         );
         console.log("Revalidate success for slug:", slug);
       } catch (err) {

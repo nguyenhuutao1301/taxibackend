@@ -86,20 +86,12 @@ class settingController {
         (key) => settingUpdate[key] === undefined && delete settingUpdate[key]
       );
 
-      const Updated = await Setting.findByIdAndUpdate(_id, settingUpdate, {
-        new: true,
-      });
-      if (!Updated) {
-        return res.status(404).json({ message: "Post not found" });
-      }
+      await Setting.findByIdAndUpdate(_id, settingUpdate);
 
-      // Lấy slug từ bài viết vừa update
-      const slug = Updated.slug;
       try {
         await fetch(
-          `${config.DOMAIN}/api/revalidate?slug=${slug}&secret=${process.env.REVALIDATE_SECRET}`
+          `${config.DOMAIN}/api/revalidate/settings?secret=${process.env.REVALIDATE_SECRET}`
         );
-        console.log("Revalidate success for slug:", slug);
       } catch (err) {
         console.error("Revalidate error:", err);
       }
