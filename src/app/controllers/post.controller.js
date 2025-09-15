@@ -43,9 +43,17 @@ class PostController {
       });
       // save data to database
       const saveNewPost = await newPost.save();
-      res.status(201).json(saveNewPost);
+      try {
+        await fetch(
+          `${config.DOMAIN}/api/revalidate/post/getall?secret=${process.env.REVALIDATE_SECRET}`
+        );
+        console.log("Revalidate success for slug:", slug);
+      } catch (err) {
+        console.error("Revalidate error:", err);
+      }
+      return res.status(201).json(saveNewPost);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: error.message });
     }
   };
   getAllPostAndLimit = async (req, res) => {
@@ -254,10 +262,18 @@ class PostController {
     }
     try {
       await Post.findByIdAndDelete(id);
-      res.json({ message: "Xóa thành công" });
+      try {
+        await fetch(
+          `${config.DOMAIN}/api/revalidate/post/getall?secret=${process.env.REVALIDATE_SECRET}`
+        );
+        console.log("Revalidate success for slug:", slug);
+      } catch (err) {
+        console.error("Revalidate error:", err);
+      }
+      return res.json({ message: "Xóa thành công" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   };
   //[PUT] /api/posts/:id
