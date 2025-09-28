@@ -14,25 +14,31 @@ export default async function callGeminiAi(prompt) {
     try {
       const currentKey = keyManager.getNextValidKey();
       const genAI = new GoogleGenerativeAI(currentKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash-lite",
+      });
+
       const result = await model.generateContent(prompt);
       const res = extractData(result.response.text());
       return res;
-
     } catch (error) {
       attempts++;
-      console.error(`Attempt ${attempts} failed with key ${keyManager.getCurrentKey()}`);
-      
-      if (error.message.includes("quota") || error.message.includes("rate limit")) {
+      console.error(
+        `Attempt ${attempts} failed with key ${keyManager.getCurrentKey()}`
+      );
+
+      if (
+        error.message.includes("quota") ||
+        error.message.includes("rate limit")
+      ) {
         keyManager.markKeyAsFailed(keyManager.getCurrentKey());
         keyManager.rotateKey();
-        
+
         if (attempts < maxAttempts) {
           continue;
         }
       }
-      
+
       throw error;
     }
   }
