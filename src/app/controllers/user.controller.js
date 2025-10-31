@@ -4,7 +4,7 @@ import { getTokenModel } from "../models/token.models.js"; // model sessin
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { getOtpModel } from "../models/auth.models.js";
-import sendOtpEmail from "../../untils/sendOtpEmail.js";
+import sendOtpEmail from "../../utils/sendOtpEmail.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -37,12 +37,9 @@ const authUser = {
         return res.status(400).json({ message: "Email đã được đăng ký." });
       }
       const foundOtp = await Otp.findOne({ email });
-      if (!foundOtp)
-        return res.status(400).json({ message: "OTP không tồn tại" });
-      if (foundOtp.expiresAt < Date.now())
-        return res.status(400).json({ message: "OTP đã hết hạn" });
-      if (foundOtp.code !== otp)
-        return res.status(400).json({ message: "OTP không đúng" });
+      if (!foundOtp) return res.status(400).json({ message: "OTP không tồn tại" });
+      if (foundOtp.expiresAt < Date.now()) return res.status(400).json({ message: "OTP đã hết hạn" });
+      if (foundOtp.code !== otp) return res.status(400).json({ message: "OTP không đúng" });
       // Check username
       const existingUsername = await User.findOne({ username });
       if (existingUsername) {
@@ -166,9 +163,7 @@ const authUser = {
       console.log("Refresh token received:", refreshToken);
 
       if (!refreshToken) {
-        return res
-          .status(400)
-          .json({ message: "Không tìm thấy refresh token." });
+        return res.status(400).json({ message: "Không tìm thấy refresh token." });
       }
 
       // Xóa refresh token trong DB
@@ -230,9 +225,7 @@ const authUser = {
       };
 
       // Xóa các trường undefined (nếu không gửi lên)
-      Object.keys(updateFields).forEach(
-        (key) => updateFields[key] === undefined && delete updateFields[key]
-      );
+      Object.keys(updateFields).forEach((key) => updateFields[key] === undefined && delete updateFields[key]);
 
       await User.findByIdAndUpdate(id, updateFields);
       const user = await User.findById(id);
@@ -241,9 +234,7 @@ const authUser = {
         user: user,
       });
     } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Lỗi máy chủ khi cập nhật người dùng.", error });
+      return res.status(500).json({ message: "Lỗi máy chủ khi cập nhật người dùng.", error });
     }
   },
   // [PATCH] /api/user/change-password/:id
@@ -276,9 +267,7 @@ const authUser = {
     const User = getUserModel(req.db);
     try {
       const user = await User.find({}).select("username role phone email _id");
-      return res
-        .status(200)
-        .json({ message: "success", success: true, users: user });
+      return res.status(200).json({ message: "success", success: true, users: user });
     } catch (error) {
       console.error(error);
       return res.status(500).json({
@@ -317,23 +306,14 @@ const authUser = {
     const Otp = getOtpModel(req.db);
     const { email } = req.body;
     const config = req.app.locals.config; // lấy config theo domain
-    if (!email)
-      return res
-        .status(400)
-        .json({ success: false, error: "Email không được bỏ trống" });
+    if (!email) return res.status(400).json({ success: false, error: "Email không được bỏ trống" });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 chữ số
-    const expiresAt = new Date(
-      Date.now() + 1000 * 60 * process.env.OTP_EXPIRE_MINUTES
-    );
+    const expiresAt = new Date(Date.now() + 1000 * 60 * process.env.OTP_EXPIRE_MINUTES);
 
     try {
       // Lưu OTP vào DB
-      await Otp.findOneAndUpdate(
-        { email },
-        { code: otp, expiresAt },
-        { upsert: true, new: true }
-      );
+      await Otp.findOneAndUpdate({ email }, { code: otp, expiresAt }, { upsert: true, new: true });
 
       await sendOtpEmail(email, otp, config);
       return res.status(200).json({ success: true, message: "Đã gửi OTP" });
@@ -347,10 +327,7 @@ const authUser = {
     const User = getUserModel(req.db);
     const { identifier } = req.body;
     const config = req.app.locals.config; // lấy config theo domain
-    if (!identifier)
-      return res
-        .status(400)
-        .json({ success: false, error: "Email không được bỏ trống" });
+    if (!identifier) return res.status(400).json({ success: false, error: "Email không được bỏ trống" });
     const existingUser = await User.findOne({ email: identifier });
     if (!existingUser) {
       return res.status(404).json({
@@ -364,11 +341,7 @@ const authUser = {
     );
 
     try {
-      await Otp.findOneAndUpdate(
-        { email: identifier },
-        { code: otp, expiresAt },
-        { upsert: true, new: true }
-      );
+      await Otp.findOneAndUpdate({ email: identifier }, { code: otp, expiresAt }, { upsert: true, new: true });
 
       await sendOtpEmail(identifier, otp, config);
 
@@ -384,20 +357,11 @@ const authUser = {
       const { otp, identifier } = req.body;
 
       const foundOtp = await Otp.findOne({ email: identifier });
-      if (!foundOtp)
-        return res
-          .status(400)
-          .json({ success: false, message: "OTP không tồn tại" });
+      if (!foundOtp) return res.status(400).json({ success: false, message: "OTP không tồn tại" });
 
-      if (foundOtp.expiresAt < Date.now())
-        return res
-          .status(400)
-          .json({ success: false, message: "OTP đã hết hạn" });
+      if (foundOtp.expiresAt < Date.now()) return res.status(400).json({ success: false, message: "OTP đã hết hạn" });
 
-      if (foundOtp.code !== otp)
-        return res
-          .status(400)
-          .json({ success: false, message: "OTP không đúng" });
+      if (foundOtp.code !== otp) return res.status(400).json({ success: false, message: "OTP không đúng" });
 
       return res.status(200).json({
         success: true,
@@ -426,20 +390,11 @@ const authUser = {
       }
 
       const foundOtp = await Otp.findOne({ email: identifier });
-      if (!foundOtp)
-        return res
-          .status(400)
-          .json({ success: false, message: "OTP không tồn tại" });
+      if (!foundOtp) return res.status(400).json({ success: false, message: "OTP không tồn tại" });
 
-      if (foundOtp.expiresAt < Date.now())
-        return res
-          .status(400)
-          .json({ success: false, message: "OTP đã hết hạn" });
+      if (foundOtp.expiresAt < Date.now()) return res.status(400).json({ success: false, message: "OTP đã hết hạn" });
 
-      if (foundOtp.code !== otp)
-        return res
-          .status(400)
-          .json({ success: false, message: "OTP không đúng" });
+      if (foundOtp.code !== otp) return res.status(400).json({ success: false, message: "OTP không đúng" });
 
       // ✅ Hash password mới và lưu vào user
       const hashedPassword = await bcrypt.hash(newPassword, 10);

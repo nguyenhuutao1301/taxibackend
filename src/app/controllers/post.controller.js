@@ -89,80 +89,66 @@ class PostController {
     }
   };
 
-  // [POST] / api/posts/find  find posts by tags
-  filterPost = async (req, res) => {
-    const Post = getPostModel(req.db);
-    try {
-      const { tags } = req.body;
-      const limit = Math.max(1, parseInt(req?.query?.limit) || 10);
+  // [POST] /api/posts/find - find posts by tags hoặc random nếu không có tag
+filterPost = async (req, res) => {
+  const Post = getPostModel(req.db);
+  try {
+    const { tags } = req.body;
+    const limit = Math.max(1, parseInt(req?.query?.limit) || 10);
 
-      // Validate tags input
-      if (!tags || !Array.isArray(tags) || tags.length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid tags. Tags should be a non-empty array.",
-        });
-      }
+    let postList = [];
 
-      // Sanitize tags array
+    // Nếu có tags hợp lệ => tìm theo tag
+    if (Array.isArray(tags) && tags.length > 0) {
       const sanitizedTags = tags.filter(
         (tag) => typeof tag === "string" && tag.trim()
       );
 
-      if (sanitizedTags.length === 0) {
-        return res
-          .status(400)
-          .json({ success: false, message: "No valid tags provided." });
+      if (sanitizedTags.length > 0) {
+        postList = await Post.find({ tags: { $in: sanitizedTags } })
+          .select("createdAt image.url title description authorName slug _id")
+          .limit(limit)
+          .sort({ createdAt: -1 })
+          .lean();
       }
-
-      // Get posts matching tags
-      let postList = await Post.find({ tags: { $in: sanitizedTags } })
-        .select("createdAt image.url title description authorName slug _id")
-        .limit(limit)
-        .sort({ createdAt: -1 })
-        .lean();
-
-      // Nếu số lượng chưa đủ -> lấy thêm random
-      if (!postList || postList.length < limit) {
-        const missing = limit - (postList?.length || 0);
-
-        // Lấy ngẫu nhiên các post khác, không trùng slug với post đã lấy
-        const excludedSlugs = postList.map((p) => p.slug);
-
-        const randomPosts = await Post.aggregate([
-          { $match: { slug: { $nin: excludedSlugs } } },
-          { $sample: { size: missing } },
-          {
-            $project: {
-              createdAt: 1,
-              "image.url": 1,
-              title: 1,
-              description: 1,
-              authorName: 1,
-              slug: 1,
-            },
-          },
-        ]);
-
-        postList = [...postList, ...randomPosts];
-      }
-
-      // Trường hợp cuối cùng vẫn không có bài nào
-      if (!postList || postList.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "No posts found matching the tags or fallback.",
-        });
-      }
-
-      res.status(200).json(postList);
-    } catch (error) {
-      console.error("Error in filterPost:", error);
-      res
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
     }
-  };
+
+    // Nếu không có tag hoặc không tìm được bài viết => random
+    if (!postList || postList.length < limit) {
+      const missing = limit - (postList?.length || 0);
+      const excludedSlugs = postList.map((p) => p.slug);
+
+      const randomPosts = await Post.aggregate([
+        { $match: { slug: { $nin: excludedSlugs } } },
+        { $sample: { size: missing } },
+        {
+          $project: {
+            createdAt: 1,
+            "image.url": 1,
+            title: 1,
+            description: 1,
+            authorName: 1,
+            slug: 1,
+          },
+        },
+      ]);
+
+      postList = [...(postList || []), ...randomPosts];
+    }
+
+    if (!postList || postList.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No posts found.",
+      });
+    }
+
+    res.status(200).json(postList);
+  } catch (error) {
+    console.error("Error in filterPost:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
 
   // [GET] /api/posts/find/query?q=query&limit=number find posts by query
   getPostByQuery = async (req, res) => {

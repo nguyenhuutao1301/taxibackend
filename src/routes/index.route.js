@@ -9,6 +9,7 @@ import indexGoogle from "./google.route.js";
 import openAi from "./openAi.route.js";
 import setting from "./setting.route.js";
 import dashboardRoute from "./dashboard.route.js";
+import crawl from "./crawl.route.js";
 
 function route(app) {
   app.use("/api", postRoute);
@@ -23,5 +24,6 @@ function route(app) {
   app.use("/api", openAi);
   app.use("/api", setting);
   app.use("/api", dashboardRoute);
+  app.use("/api", crawl);
 }
 export default route;
