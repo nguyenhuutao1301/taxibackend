@@ -64,6 +64,7 @@ app.use(
         "https://taxisieure.com",
         "https://www.taxisieure.com",
         "https://hotrodatxesieure.com",
+        "https://www.hotrodatxesieure.com",
       ];
 
       if (allowedOrigins.includes(origin)) {
