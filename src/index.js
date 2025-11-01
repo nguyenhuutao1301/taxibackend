@@ -40,6 +40,39 @@ app.use(
     limit: "50mb",
   })
 );
+// CORS
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Cho phép Postman/cURL
+
+      const allowedOrigins = [
+        "https://goixegiare.pro.vn",
+        "https://xegrabdongnai.pro.vn",
+        "https://taxifrontend.vercel.app",
+        "https://taxinhanh247.pro.vn",
+        "https://datxenhanh-24h.pro.vn",
+        "https://datxetietkiem.com",
+        "http://localhost:3000",
+        "https://taxisieure.com",
+        "https://www.taxisieure.com",
+        "https://hotrodatxesieure.com",
+        "https://www.hotrodatxesieure.com",
+      ];
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+    optionsSuccessStatus: 200,
+  })
+);
 
 // Cookie parser
 app.use(cookieParser());
@@ -47,52 +80,12 @@ app.use(cookieParser());
 // Static file
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-// CORS
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-  })
-);
-
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       if (!origin) return callback(null, true); // Cho phép Postman/cURL
-
-//       const allowedOrigins = [
-//         "https://goixegiare.pro.vn",
-//         "https://xegrabdongnai.pro.vn",
-//         "https://taxifrontend.vercel.app",
-//         "https://taxinhanh247.pro.vn",
-//         "https://datxenhanh-24h.pro.vn",
-//         "https://datxetietkiem.com",
-//         "http://localhost:3000",
-//         "https://taxisieure.com",
-//         "https://www.taxisieure.com",
-//         "https://hotrodatxesieure.com",
-//         "https://www.hotrodatxesieure.com",
-//       ];
-
-//       if (allowedOrigins.includes(origin)) {
-//         return callback(null, true);
-//       } else {
-//         return callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-//     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
-//     optionsSuccessStatus: 200,
-//   })
-// );
-
 // Middleware config domain (sau khi đã parse JSON & cors)
 app.use(configPerDomain);
 
 // Logging
 app.use(morgan("combined"));
-
+app.options("*", cors()); // Cho phép preflight cho tất cả route
 // Routes
 route(app);
 
