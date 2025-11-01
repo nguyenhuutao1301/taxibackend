@@ -40,6 +40,12 @@ app.use(
     limit: "50mb",
   })
 );
+
+// Debug origin trước
+app.use((req, res, next) => {
+  console.log("Incoming Origin:", req.headers.origin);
+  next();
+});
 // CORS
 
 app.use(
@@ -85,7 +91,7 @@ app.use(configPerDomain);
 
 // Logging
 app.use(morgan("combined"));
-app.options("*", cors()); // Cho phép preflight cho tất cả route
+app.options("*", cors({ origin: allowedOrigins, credentials: true }));
 // Routes
 route(app);
 
