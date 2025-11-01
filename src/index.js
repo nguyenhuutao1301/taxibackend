@@ -48,37 +48,38 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // CORS
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // Cho phép Postman/cURL
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       if (!origin) return callback(null, true); // Cho phép Postman/cURL
 
-      const allowedOrigins = [
-        "https://goixegiare.pro.vn",
-        "https://xegrabdongnai.pro.vn",
-        "https://taxifrontend.vercel.app",
-        "https://taxinhanh247.pro.vn",
-        "https://datxenhanh-24h.pro.vn",
-        "https://datxetietkiem.com",
-        "http://localhost:3000",
-        "https://taxisieure.com",
-        "https://www.taxisieure.com",
-        "https://hotrodatxesieure.com",
-        "https://www.hotrodatxesieure.com",
-      ];
+//       const allowedOrigins = [
+//         "https://goixegiare.pro.vn",
+//         "https://xegrabdongnai.pro.vn",
+//         "https://taxifrontend.vercel.app",
+//         "https://taxinhanh247.pro.vn",
+//         "https://datxenhanh-24h.pro.vn",
+//         "https://datxetietkiem.com",
+//         "http://localhost:3000",
+//         "https://taxisieure.com",
+//         "https://www.taxisieure.com",
+//         "https://hotrodatxesieure.com",
+//         "https://www.hotrodatxesieure.com",
+//       ];
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
-    optionsSuccessStatus: 200,
-  })
-);
+//       if (allowedOrigins.includes(origin)) {
+//         return callback(null, true);
+//       } else {
+//         return callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+//     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+//     optionsSuccessStatus: 200,
+//   })
+// );
 
 // Middleware config domain (sau khi đã parse JSON & cors)
 app.use(configPerDomain);
