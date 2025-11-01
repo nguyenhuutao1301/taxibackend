@@ -1,4 +1,6 @@
 import { getPostModel } from "../models/post.models.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 class PostController {
   // [POST] /api/posts
@@ -44,9 +46,7 @@ class PostController {
       // save data to database
       const saveNewPost = await newPost.save();
       try {
-        await fetch(
-          `${config.DOMAIN}/api/revalidate/post/getall?secret=${process.env.REVALIDATE_SECRET}`
-        );
+        await fetch(`${config.DOMAIN}/api/revalidate/post/getall?secret=${process.env.REVALIDATE_SECRET}`);
         console.log("Revalidate success for slug:", slug);
       } catch (err) {
         console.error("Revalidate error:", err);
@@ -61,9 +61,7 @@ class PostController {
     try {
       const { limit } = req.query;
 
-      let query = Post.find({})
-        .select("title slug createdAt isIndexed")
-        .sort({ createdAt: -1 });
+      let query = Post.find({}).select("title slug createdAt isIndexed").sort({ createdAt: -1 });
 
       if (limit !== undefined) {
         const parsedLimit = parseInt(limit, 10);
@@ -73,9 +71,7 @@ class PostController {
         }
 
         if (parsedLimit < 1) {
-          return res
-            .status(400)
-            .json({ message: "Limit must be greater than 0" });
+          return res.status(400).json({ message: "Limit must be greater than 0" });
         }
 
         query = query.limit(parsedLimit);
@@ -90,65 +86,63 @@ class PostController {
   };
 
   // [POST] /api/posts/find - find posts by tags hoặc random nếu không có tag
-filterPost = async (req, res) => {
-  const Post = getPostModel(req.db);
-  try {
-    const { tags } = req.body;
-    const limit = Math.max(1, parseInt(req?.query?.limit) || 10);
+  filterPost = async (req, res) => {
+    const Post = getPostModel(req.db);
+    try {
+      const { tags } = req.body;
+      const limit = Math.max(1, parseInt(req?.query?.limit) || 10);
 
-    let postList = [];
+      let postList = [];
 
-    // Nếu có tags hợp lệ => tìm theo tag
-    if (Array.isArray(tags) && tags.length > 0) {
-      const sanitizedTags = tags.filter(
-        (tag) => typeof tag === "string" && tag.trim()
-      );
+      // Nếu có tags hợp lệ => tìm theo tag
+      if (Array.isArray(tags) && tags.length > 0) {
+        const sanitizedTags = tags.filter((tag) => typeof tag === "string" && tag.trim());
 
-      if (sanitizedTags.length > 0) {
-        postList = await Post.find({ tags: { $in: sanitizedTags } })
-          .select("createdAt image.url title description authorName slug _id")
-          .limit(limit)
-          .sort({ createdAt: -1 })
-          .lean();
+        if (sanitizedTags.length > 0) {
+          postList = await Post.find({ tags: { $in: sanitizedTags } })
+            .select("createdAt image.url title description authorName slug _id")
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .lean();
+        }
       }
-    }
 
-    // Nếu không có tag hoặc không tìm được bài viết => random
-    if (!postList || postList.length < limit) {
-      const missing = limit - (postList?.length || 0);
-      const excludedSlugs = postList.map((p) => p.slug);
+      // Nếu không có tag hoặc không tìm được bài viết => random
+      if (!postList || postList.length < limit) {
+        const missing = limit - (postList?.length || 0);
+        const excludedSlugs = postList.map((p) => p.slug);
 
-      const randomPosts = await Post.aggregate([
-        { $match: { slug: { $nin: excludedSlugs } } },
-        { $sample: { size: missing } },
-        {
-          $project: {
-            createdAt: 1,
-            "image.url": 1,
-            title: 1,
-            description: 1,
-            authorName: 1,
-            slug: 1,
+        const randomPosts = await Post.aggregate([
+          { $match: { slug: { $nin: excludedSlugs } } },
+          { $sample: { size: missing } },
+          {
+            $project: {
+              createdAt: 1,
+              "image.url": 1,
+              title: 1,
+              description: 1,
+              authorName: 1,
+              slug: 1,
+            },
           },
-        },
-      ]);
+        ]);
 
-      postList = [...(postList || []), ...randomPosts];
+        postList = [...(postList || []), ...randomPosts];
+      }
+
+      if (!postList || postList.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No posts found.",
+        });
+      }
+
+      res.status(200).json(postList);
+    } catch (error) {
+      console.error("Error in filterPost:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
     }
-
-    if (!postList || postList.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No posts found.",
-      });
-    }
-
-    res.status(200).json(postList);
-  } catch (error) {
-    console.error("Error in filterPost:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
+  };
 
   // [GET] /api/posts/find/query?q=query&limit=number find posts by query
   getPostByQuery = async (req, res) => {
@@ -249,9 +243,7 @@ filterPost = async (req, res) => {
     try {
       await Post.findByIdAndDelete(id);
       try {
-        await fetch(
-          `${config.DOMAIN}/api/revalidate/post/getall?secret=${process.env.REVALIDATE_SECRET}`
-        );
+        await fetch(`${config.DOMAIN}/api/revalidate/post/getall?secret=${process.env.REVALIDATE_SECRET}`);
         console.log("Revalidate success for slug:", slug);
       } catch (err) {
         console.error("Revalidate error:", err);
@@ -277,9 +269,7 @@ filterPost = async (req, res) => {
         ...data,
         updatedAt,
       };
-      Object.keys(blogUpdate).forEach(
-        (key) => blogUpdate[key] === undefined && delete blogUpdate[key]
-      );
+      Object.keys(blogUpdate).forEach((key) => blogUpdate[key] === undefined && delete blogUpdate[key]);
       const updatedPost = await Post.findByIdAndUpdate(id, blogUpdate, {
         new: true,
       });
@@ -291,9 +281,7 @@ filterPost = async (req, res) => {
       const slug = updatedPost.slug;
 
       try {
-        await fetch(
-          `${config.DOMAIN}/api/revalidate/post?slug=${slug}&secret=${process.env.REVALIDATE_SECRET}`
-        );
+        await fetch(`${config.DOMAIN}/api/revalidate/post?slug=${slug}&secret=${process.env.REVALIDATE_SECRET}`);
         console.log("Revalidate success for slug:", slug);
       } catch (err) {
         console.error("Revalidate error:", err);
@@ -358,8 +346,7 @@ filterPost = async (req, res) => {
       return res.status(500).json({
         success: false,
         message: "Error fetching paginated posts",
-        error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
+        error: process.env.NODE_ENV === "development" ? error.message : undefined,
       });
     }
   };
@@ -367,17 +354,13 @@ filterPost = async (req, res) => {
   getPostRenderSiteMap = async (req, res) => {
     const Post = getPostModel(req.db);
     try {
-      const posts = await Post.find({})
-        .select("slug title image publishedDate modifiedDate")
-        .sort({ createdAt: -1 });
+      const posts = await Post.find({}).select("slug title image publishedDate modifiedDate").sort({ createdAt: -1 });
 
       const host = req.app.locals.config.DOMAIN;
 
       const data = posts.map((post) => {
         const loc = `${host}/post/${post.slug}`;
-        const lastmod = new Date(
-          post.modifiedDate || post.publishedDate || Date.now()
-        ).toISOString();
+        const lastmod = new Date(post.modifiedDate || post.publishedDate || Date.now()).toISOString();
 
         let images = {};
 
@@ -433,9 +416,7 @@ filterPost = async (req, res) => {
 
       const updatedLikes = await Post.findOneAndUpdate(
         { _id },
-        alreadyLiked
-          ? { $pull: { likes: username } }
-          : { $addToSet: { likes: username } },
+        alreadyLiked ? { $pull: { likes: username } } : { $addToSet: { likes: username } },
         { new: true }
       );
       return res.json({
@@ -460,16 +441,13 @@ filterPost = async (req, res) => {
       if (!find || !replace || !fields || !fields.length) {
         return res.status(400).json({
           success: false,
-          message:
-            "Từ khóa tìm kiếm, từ thay thế và ít nhất một trường là bắt buộc",
+          message: "Từ khóa tìm kiếm, từ thay thế và ít nhất một trường là bắt buộc",
         });
       }
 
       // Chỉ cho phép update các trường hợp lệ
       const allowedFields = ["title", "description", "content", "authorName"];
-      const validFields = fields.filter((field) =>
-        allowedFields.includes(field)
-      );
+      const validFields = fields.filter((field) => allowedFields.includes(field));
 
       if (!validFields.length) {
         return res.status(400).json({

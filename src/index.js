@@ -23,7 +23,7 @@ app.set("trust proxy", true);
 
 // ⏱ Timeout cho toàn bộ request (5 phút)
 app.use((req, res, next) => {
-  res.setTimeout(300000, () => {
+  res.setTimeout(18000000, () => {
     console.error("⏱ Request timeout.");
     if (!res.headersSent) {
       res.status(408).json({ message: "Request Timeout" });
@@ -63,6 +63,7 @@ app.use(
         "http://localhost:3000",
         "https://taxisieure.com",
         "https://www.taxisieure.com",
+        "https://hotrodatxesieure.com",
       ];
 
       if (allowedOrigins.includes(origin)) {
@@ -73,13 +74,7 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowedHeaders: [
-      "Origin",
-      "X-Requested-With",
-      "Content-Type",
-      "Accept",
-      "Authorization",
-    ],
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
     optionsSuccessStatus: 200,
   })
 );
