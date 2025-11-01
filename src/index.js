@@ -48,7 +48,15 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // CORS
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // ✅ Cho phép tất cả domain (nếu muốn hạn chế, liệt kê domain ở đây)
+      callback(null, true);
+    },
+    credentials: true,
+  })
+);
 // app.use(
 //   cors({
 //     origin: function (origin, callback) {
