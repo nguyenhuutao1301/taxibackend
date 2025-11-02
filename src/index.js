@@ -41,11 +41,6 @@ app.use(
   })
 );
 
-// Debug origin trước
-app.use((req, res, next) => {
-  console.log("Incoming Origin:", req.headers.origin);
-  next();
-});
 // CORS
 
 app.use(
@@ -56,11 +51,9 @@ app.use(
       const allowedOrigins = [
         "https://goixegiare.pro.vn",
         "https://xegrabdongnai.pro.vn",
-        "https://taxifrontend.vercel.app",
         "https://taxinhanh247.pro.vn",
         "https://datxenhanh-24h.pro.vn",
         "https://datxetietkiem.com",
-        "http://localhost:3000",
         "https://taxisieure.com",
         "https://www.taxisieure.com",
         "https://hotrodatxesieure.com",
@@ -76,7 +69,6 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
-    optionsSuccessStatus: 200,
   })
 );
 
