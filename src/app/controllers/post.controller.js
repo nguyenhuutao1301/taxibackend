@@ -24,6 +24,7 @@ class PostController {
         likes,
       } = req.body;
       let uniqueSlug = slug;
+      const config = req.app.locals.config;
       while (await Post.findOne({ slug: uniqueSlug })) {
         uniqueSlug = `${slug}-${counter}`;
         counter++;

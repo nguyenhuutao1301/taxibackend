@@ -10,7 +10,7 @@ const configMap = {
     HOST: process.env.HOST,
     EMAIL_USER: process.env.EMAIL_USER_LOCAL,
     EMAIL_PASS: process.env.EMAIL_PASS_LOCAL,
-    DOMAIN: process.env.DOMAIN,
+    DOMAIN: "http://localhost:3000",
     PROMPT: `Nội dung phải CHUYÊN SÂU:
    - Ngành viết về dịch vụ đặt xe : xe ôm , taxi , giao hàng
    - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh để viết chuyên sâu có thể sử dụng mỗi địa phương làm 1 tiêu đề phụ
@@ -129,6 +129,27 @@ const configMap = {
     - Một số thông tin su dung trong content:
       + Số điện thoại 0933551965
       + Website: https://hotrodatxesieure.com
+      + Có thể đặt xe qua biểu mẫu trong website ( nhập điểm đón , điểm đến, loại xe , số điện thoại )
+   - nếu có thể hãy sử dụng bảng giá cước tham khảo 
+    `,
+    numberWord: "2500-3500",
+  },
+  "tongdatdatxe24gio.top": {
+    DATABASE_URI: process.env.MONGODB_URI_TONGDAIDATXESIEURE,
+    DISCORD_WEBHOOK: process.env.DISCORD_WEBHOOK_URL_TONGDAIDATXESIEURE,
+    JWT_SECRET: process.env.JWT_SECRET_TONGDAIDATXESIEURE,
+    JWT_SECRET_RERESH: process.env.JWT_SECRET_RERESH_TONGDAIDATXESIEURE,
+    HOST: process.env.HOST,
+    EMAIL_USER: process.env.EMAIL_USER_TONGDAIDATXESIEURE,
+    EMAIL_PASS: process.env.EMAIL_PASS_TONGDAIDATXESIEURE,
+    DOMAIN: "https://tongdatdatxe24gio.top",
+    PROMPT: `Nội dung phải CHUYÊN SÂU:
+    - Ngành viết về dịch vụ vận tải hành khách như grab , bee, vinasun , xanh sm ,...
+    - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh để viết chuyên sâu có thể sử dụng mỗi địa phương làm 1 tiêu đề phụ
+    - Có thể sử dụng ví dụ thực tế, số liệu, và nghiên cứu liên quan.
+    - Một số thông tin su dung trong content:
+      + Số điện thoại 0942151158
+      + Website: https://tongdaidatxe24gio.top
       + Có thể đặt xe qua biểu mẫu trong website ( nhập điểm đón , điểm đến, loại xe , số điện thoại )
    - nếu có thể hãy sử dụng bảng giá cước tham khảo 
     `,

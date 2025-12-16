@@ -40,6 +40,16 @@ app.use(
     limit: "50mb",
   })
 );
+//CORS DEBUG
+app.use((req, res, next) => {
+  console.log("🛰️ [CORS DEBUG]");
+  console.log("Method:", req.method);
+  console.log("Origin:", req.headers.origin);
+  console.log("Host:", req.headers.host);
+  console.log("Path:", req.originalUrl);
+  console.log("--------------------------------------------------");
+  next();
+});
 
 // CORS
 
@@ -58,6 +68,8 @@ app.use(
         "https://www.taxisieure.com",
         "https://hotrodatxesieure.com",
         "https://www.hotrodatxesieure.com",
+        "https://tongdatdatxe24gio.top",
+        "http://localhost:3000",
       ];
 
       if (allowedOrigins.includes(origin)) {
@@ -83,7 +95,6 @@ app.use(configPerDomain);
 
 // Logging
 app.use(morgan("combined"));
-app.options("*", cors({ origin: allowedOrigins, credentials: true }));
 // Routes
 route(app);
 

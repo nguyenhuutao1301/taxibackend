@@ -5,6 +5,8 @@ import { crawlArticleData } from "../../utils/crawlHelper.js";
 import { getPostModel } from "../models/post.models.js";
 import { getSettingModel } from "../models/setting.models.js";
 import { cleanContent } from "../../utils/cleanContent.js";
+import converSlug from "../../utils/convertSlug.js";
+import { getImageModel } from "../models/image.models.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -12,21 +14,6 @@ dotenv.config();
  * Crawl bài viết từ sitemap và lưu vào database.
  * Gọi qua API: POST /api/crawl
  */
-const generateSlug = (title) => {
-  const from = "àáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ";
-  const to = "aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd";
-
-  const newTitle = title
-    .toLowerCase()
-    .split("")
-    .map((char) => {
-      const i = from.indexOf(char);
-      return i !== -1 ? to[i] : char;
-    })
-    .join("");
-
-  return newTitle.replace(/ /g, "-").replace(/[^\w-]+/g, "");
-};
 export const crawlFromSitemapController = async (req, res) => {
   const { url: customUrl, defautphone } = req.body || {};
   const sitemapUrl = customUrl;
@@ -38,10 +25,15 @@ export const crawlFromSitemapController = async (req, res) => {
   const db = req.db; // nếu bạn dùng middleware attach db
   const Post = getPostModel(db);
   const Setting = getSettingModel(db);
+  const Image = getImageModel(db);
 
   const limit = pLimit(5); // giới hạn 5 request song song
-  console.log(`🚀 Bắt đầu crawl từ sitemap: ${sitemapUrl}`);
+  console.log(`🚀 Đang phân tích sitemap: ${sitemapUrl}`);
   try {
+    //bắt đầu lấy ảnh từ database - lưu vào mảng
+    const images = await Image.find({});
+    const imageUrls = images.map((img) => img.filePath);
+    console.log(`📸 Lấy được ${imageUrls.length} ảnh từ database.`);
     // 🧭 Lấy toàn bộ URL từ sitemap
     async function getUrlsFromSitemap(sitemapUrl) {
       try {
@@ -89,26 +81,41 @@ export const crawlFromSitemapController = async (req, res) => {
               console.log(`⚠️ Bỏ qua (thiếu dữ liệu): ${url}`);
               return;
             }
-
+            // 🖼️ Ưu tiên ảnh trong DB trước
+            let finalImageUrl = "";
+            if (imageUrls.length > 0) {
+              const randomIndex = Math.floor(Math.random() * imageUrls.length);
+              finalImageUrl = imageUrls[randomIndex];
+              console.log(`🎲 Dùng ảnh ngẫu nhiên từ DB cho: ${data.title}`);
+            } else if (data.image) {
+              finalImageUrl = data.image;
+              console.log(`🖼️ Dùng ảnh từ bài viết: ${data.image}`);
+            } else {
+              // fallback favicon nếu không có gì
+              try {
+                const siteOrigin = new URL(url).origin;
+                finalImageUrl = `${siteOrigin}/favicon.ico`;
+                console.log(`🔁 Fallback ảnh từ website: ${finalImageUrl}`);
+              } catch {
+                finalImageUrl = "";
+              }
+            }
             // Tạo bài viết
             const post = new Post({
               title: data.title,
               description: data.description || data.title,
-              slug: generateSlug(data.title) || data.slug,
+              slug: converSlug(data.title) || data.slug,
               content: cleanContent(data.content),
-              authorName: data.authorName || "Cường Tổng Đài Đặt Xe",
-              authorUrl: data.authorUrl || "/profile/6905c52e88aabc72ed51aa47",
+              authorName: "Tổng Đài Đặt Xe",
+              authorUrl: "/profile/6905c52e88aabc72ed51aa47",
               publishedDate: new Date(),
               image: {
-                url: data.image || "",
+                url: finalImageUrl,
                 alt: data.title || "",
               },
-              tags: data.tags || ["grab", "goixe", "taxi", "taxi online"],
+              tags: data.tags || ["grab", "taxi", "đặt taxi"],
               likes: [],
-              breadcrumbs: data.breadcrumbs || [
-                { name: "Trang Chủ", url: "/" },
-                { name: "Blogs", url: "/bai-viet" },
-              ],
+              breadcrumbs: [{ name: "Trang Chủ", url: "/" }],
             });
 
             await post.save();
@@ -155,7 +162,7 @@ export const convertCrawledContentController = async (req, res) => {
         await post.save();
         updatedCount++;
         try {
-          await fetch(`${config.DOMAIN}/api/revalidate/post?slug=${post.slug}&secret=${process.env.REVALIDATE_SECRET}`);
+          // await fetch(`${config.DOMAIN}/api/revalidate/post?slug=${post.slug}&secret=${process.env.REVALIDATE_SECRET}`);
           console.log("✅ Vercal render:", post.title);
         } catch (err) {
           console.error("Revalidate error:", err);
@@ -173,5 +180,41 @@ export const convertCrawledContentController = async (req, res) => {
   } catch (err) {
     console.error("❌ Lỗi khi cập nhật nội dung:", err);
     return res.status(500).json({ success: false, message: "Lỗi cập nhật nội dung" });
+  }
+};
+
+export const fixInvalidSlugsController = async (req, res) => {
+  const Post = getPostModel(req.db);
+  try {
+    // Regex tìm slug chứa số điện thoại có dấu chấm, ví dụ: 0933.551.965
+    const invalidPosts = await Post.find({ slug: /\d+\.\d+\.\d+/ });
+
+    if (invalidPosts.length === 0) {
+      return res.status(200).json({ success: true, message: "Không tìm thấy slug không hợp lệ." });
+    }
+
+    let updatedCount = 0;
+
+    // Duyệt qua từng bài viết và sửa slug
+    for (const post of invalidPosts) {
+      const fixedSlug = post.slug.replace(/(\d+)\.(\d+)\.(\d+)/g, "$1-$2-$3");
+
+      // Cập nhật slug mới nếu khác
+      if (fixedSlug !== post.slug) {
+        post.slug = fixedSlug;
+        await post.save();
+        updatedCount++;
+      }
+    }
+
+    console.log(`Đã sửa ${updatedCount} slug không hợp lệ.`);
+    return res.status(200).json({
+      success: true,
+      message: `Đã sửa ${updatedCount} slug không hợp lệ.`,
+      count: updatedCount,
+    });
+  } catch (error) {
+    console.error("Lỗi khi sửa slug:", error);
+    return res.status(500).json({ success: false, message: "Lỗi khi sửa slug" });
   }
 };

@@ -10,9 +10,13 @@ export async function crawlArticleData(url) {
     const { data } = await axios.get(url, { timeout: 20000 });
     const $ = cheerio.load(data);
 
-    const title = $("h1").first().text().trim();
+    const title = $("title").text().trim() || $("h1").first().text().trim();
+
     const description = $('meta[name="description"]').attr("content") || "";
-    const content = $(".article-content, .post-content, article").html() || "";
+    const content =
+      $(
+        " .news-left , .single-page  , .entry-content, .post-content , .content-main , .content-format , #content"
+      ).html() || "";
     const image = $("meta[property='og:image']").attr("content") || $("img").first().attr("src") || "";
 
     const slug = url.split("/").filter(Boolean).pop();

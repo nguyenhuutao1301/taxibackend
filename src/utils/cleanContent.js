@@ -12,7 +12,7 @@ export function cleanContent(html) {
 
   // 1️⃣ Xóa các phần tử theo class/id hay tag không mong muốn
   $(
-    "figure , img , .size-full ,#ez-toc-container , .heateor_sss_sharing_container , footer, header , .gizmo-bot-avatar , .rmp-rating-widget , .rmp-results-widget , .rating, .wp-block-rating, .review, .ads, .ad, .advertisement, script, style, iframe , .entry-header , .kk-star-ratings , .navigation-post"
+    "figure , img , #comments , .post-sidebar, .post-views , .size-full ,#ez-toc-container , .heateor_sss_sharing_container , footer, header , .gizmo-bot-avatar , .rmp-rating-widget , .rmp-results-widget , .rating, .wp-block-rating, .review, .ads, .ad, .advertisement, script, style, iframe , .entry-header , .kk-star-ratings , .navigation-post"
   ).remove();
 
   // 2️⃣ Xóa các block plugin WordPress thường gặp
