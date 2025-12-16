@@ -158,6 +158,7 @@ const authUser = {
   // Logout user
   logoutUser: async (req, res) => {
     const User = getUserModel(req.db);
+    const Token = getTokenModel(req.db);
     try {
       const refreshToken = req.cookies.refreshToken;
       console.log("Refresh token received:", refreshToken);
