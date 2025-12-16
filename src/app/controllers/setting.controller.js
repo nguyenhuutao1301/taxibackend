@@ -7,6 +7,7 @@ class settingController {
       return res.status(500).json({ message: "Không kết nối được database", success: false });
     }
     const Setting = getSettingModel(req.db);
+    const config = req.app.locals.config;
     try {
       const { slug, numberphone } = req.body;
       if (!slug || !numberphone) {
@@ -17,15 +18,20 @@ class settingController {
       }
       const hasSlug = await Setting.findOne({ slug });
       if (hasSlug) {
-        return res.status(400).json({ message: "slug đã tồn tại", success: false });
+        return res.status(400).json({ message: "đường dẫn đã tồn tại", success: false });
       }
       const newSetting = new Setting({ slug, numberphone });
       await newSetting.save();
+      try {
+        await fetch(`${config.DOMAIN}/api/revalidate/settings?secret=${process.env.REVALIDATE_SECRET}`);
+      } catch (err) {
+        console.error("Revalidate error:", err);
+      }
       return res.status(200).json({ message: "đã tạo thành công", success: true });
     } catch (error) {
       console.log("500 error", error);
       return res.status(500).json({
-        message: "Lỗi server 500",
+        message: "Lỗi server",
         error: error.message,
         success: false,
       });
