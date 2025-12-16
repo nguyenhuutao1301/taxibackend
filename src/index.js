@@ -40,19 +40,7 @@ app.use(
     limit: "50mb",
   })
 );
-//CORS DEBUG
-app.use((req, res, next) => {
-  console.log("🛰️ [CORS DEBUG]");
-  console.log("Method:", req.method);
-  console.log("Origin:", req.headers.origin);
-  console.log("Host:", req.headers.host);
-  console.log("Path:", req.originalUrl);
-  console.log("--------------------------------------------------");
-  next();
-});
-
-// CORS
-
+//CORS
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -64,6 +52,7 @@ app.use(
         "https://taxinhanh247.pro.vn",
         "https://datxenhanh-24h.pro.vn",
         "https://datxetietkiem.com",
+        "https://www.datxetietkiem.com",
         "https://taxisieure.com",
         "https://www.taxisieure.com",
         "https://hotrodatxesieure.com",
@@ -83,12 +72,14 @@ app.use(
     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
   })
 );
-
 // Cookie parser
 app.use(cookieParser());
 
 // Static file
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
+// Cookie parser
+app.use(cookieParser());
 
 // Middleware config domain (sau khi đã parse JSON & cors)
 app.use(configPerDomain);
