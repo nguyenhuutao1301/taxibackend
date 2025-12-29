@@ -79,9 +79,9 @@ const authUser = {
         return res.status(400).json({ message: "Email không tồn tại." });
       }
       const isPasswordValid = await bcrypt.compare(password, user.password);
-      console.log("Password input:", password);
-      console.log("Password in DB:", user.password);
       if (!isPasswordValid) {
+        console.log("Password check:", password);
+
         return res.status(400).json({ message: "Sai mật khẩu." });
       }
       if (user && isPasswordValid) {

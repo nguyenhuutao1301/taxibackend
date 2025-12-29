@@ -206,6 +206,7 @@ class PostController {
       }
       const post = await Post.findOne({ slug });
       if (!post) {
+        console.log("Không tìm thấy bài viết với slug:", slug);
         return res.status(404).json({ message: "Không tìm thấy bài viết" });
       }
 

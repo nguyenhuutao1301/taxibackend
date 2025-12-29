@@ -4,6 +4,7 @@ const settingSchema = new mongoose.Schema(
   {
     slug: { type: String },
     numberphone: { type: String },
+    notificationDiscord: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -1,65 +1,72 @@
 import { UAParser } from "ua-parser-js";
 import { getTrafficModel } from "../models/traffic.models.js";
+import { getSettingModel } from "../models/setting.models.js";
 import { sendDiscordMessage } from "../../helpers/discord/index.js";
 import { isbot } from "isbot";
 class TrafficController {
   createTraffic = async (req, res) => {
     const config = req.app.locals.config;
     const Traffic = getTrafficModel(req.db);
-    const ipBot = ["72.14.199"];
-    try {
-      const { lat, lon, referrer, userAgent, visitorId } = req.body || {};
+    const Settings = getSettingModel(req.db);
 
-      const ip =
-        req.headers["x-forwarded-for"]?.split(",")[0] ||
-        req.socket?.remoteAddress ||
-        "unknown";
+    const ipBot = ["72.14.199"];
+
+    try {
+      const { lat, lon, referrer, userAgent, visitorId, slug } = req.body || {};
+
+      const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket?.remoteAddress || "unknown";
 
       const parser = new UAParser(userAgent || "");
       const browser = parser.getBrowser().name || "unknown";
       const deviceInfo = parser.getDevice();
-      const device = deviceInfo.model
-        ? `${deviceInfo.vendor || "android"} ${deviceInfo.model}`
-        : "Desktop";
+      const device = deviceInfo.model ? `${deviceInfo.vendor || "android"} ${deviceInfo.model}` : "Desktop";
 
       const isBotUser = isbot(userAgent || "");
+
       const existing = await Traffic.findOne({ visitorId });
 
-      function isIpBlocked(ip, blocked) {
-        return blocked.some((rule) => {
-          if (rule.split(".").length < 4) {
-            return ip.startsWith(rule + ".");
-          }
-          return ip === rule;
-        });
-      }
+      const isIpBlocked = (ip, blocked) =>
+        blocked.some((rule) => (rule.split(".").length < 4 ? ip.startsWith(rule + ".") : ip === rule));
+
+      const shouldSendDiscord = async () => {
+        // ❌ bot thì không gửi
+        if (isBotUser) return false;
+
+        // ❌ IP bị block thì không gửi
+        if (isIpBlocked(ip, ipBot)) return false;
+
+        // 🔍 tìm setting theo slug
+        const setting = await Settings.findOne({ slug });
+
+        // ✅ KHÔNG có setting → mặc định BẬT thông báo
+        if (!setting) return true;
+
+        // 🚫 notificationDiscord = true → TẮT thông báo
+        if (setting.notificationDiscord === true) return false;
+
+        // ✅ notificationDiscord = false → BẬT thông báo
+        return true;
+      };
+
+      /* ================= VISITOR EXIST ================= */
 
       if (existing) {
         existing.times += 1;
-        existing.ref = referrer ?? "/";
+        existing.ref = referrer;
         existing.historyIp.push(ip);
         existing.historyTimestamps.push(new Date());
         existing.historyLocation.push(
-          lat && lon
-            ? `https://www.google.com/maps/place/${lat},${lon}`
-            : "không lấy được vị trí"
+          lat && lon ? `https://www.google.com/maps/place/${lat},${lon}` : "không lấy được vị trí"
         );
-        existing.historyRef.push(referrer || "unknown");
+        existing.historyRef.push(referrer);
+
         await existing.save();
 
-        // Fix: Ensure lastTimestamp is a valid Date object
-        const lastTimestamp =
-          existing.historyTimestamps[existing.historyTimestamps.length - 1];
-        const timeSinceLastVisit =
-          lastTimestamp instanceof Date
-            ? Date.now() - lastTimestamp.getTime()
-            : 0;
+        const lastTimestamp = existing.historyTimestamps[existing.historyTimestamps.length - 2];
 
-        if (
-          !isBotUser &&
-          !isIpBlocked(ip, ipBot) &&
-          (!lastTimestamp || timeSinceLastVisit > 10000)
-        ) {
+        const timeSinceLastVisit = lastTimestamp ? Date.now() - new Date(lastTimestamp).getTime() : Infinity;
+
+        if (timeSinceLastVisit > 10_000 && (await shouldSendDiscord())) {
           await sendDiscordMessage({
             ip,
             lat,
@@ -74,35 +81,30 @@ class TrafficController {
 
         return res.status(200).json({
           message: "Visitor updated",
-          existing,
         });
       }
-      const data = {
+
+      /* ================= NEW VISITOR ================= */
+
+      const newTraffic = new Traffic({
         visitorId,
         Ip: ip,
         isBot: isBotUser,
-        ref: referrer || "/",
+        ref: referrer,
         browser,
         isAds: referrer?.includes("ads") ?? false,
         device,
-        location:
-          lat && lon
-            ? `https://www.google.com/maps/place/${lat},${lon}`
-            : "không lấy được vị trí",
+        location: lat && lon ? `https://www.google.com/maps/place/${lat},${lon}` : "không lấy được vị trí",
         times: 1,
         historyIp: [ip],
-        historyRef: referrer ? [referrer] : ["unknown"],
-        historyLocation:
-          lat && lon
-            ? [`https://www.google.com/maps/place/${lat},${lon}`]
-            : ["không lấy được vị trí"],
+        historyRef: [referrer],
+        historyLocation: [lat && lon ? `https://www.google.com/maps/place/${lat},${lon}` : "không lấy được vị trí"],
         historyTimestamps: [new Date()],
-      };
+      });
 
-      const newTraffic = new Traffic(data);
       await newTraffic.save();
 
-      if (!isBotUser && !isIpBlocked(ip, ipBot)) {
+      if (await shouldSendDiscord()) {
         await sendDiscordMessage({
           ip,
           lat,
@@ -121,6 +123,7 @@ class TrafficController {
       return res.status(500).json({ error: "Internal server error" });
     }
   };
+
   getTraffic = async (req, res) => {
     const Traffic = getTrafficModel(req.db);
     try {
@@ -138,7 +141,6 @@ class TrafficController {
     }
   };
   getTrafficById = async (req, res) => {
-    const config = req.app.locals.config;
     const Traffic = getTrafficModel(req.db);
     const _id = req.query.id;
     if (!_id) {
