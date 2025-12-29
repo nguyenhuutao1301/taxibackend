@@ -11,7 +11,7 @@ class settingController {
     }
 
     const Setting = getSettingModel(req.db);
-    const { slug, numberphone, notificationSetting } = req.body;
+    const { slug, numberphone, notificationDiscord } = req.body;
     const config = req.app.locals.config;
 
     if (typeof slug !== "string" || !slug.trim() || typeof numberphone !== "string" || !numberphone.trim()) {
@@ -20,8 +20,6 @@ class settingController {
         success: false,
       });
     }
-
-    const notificationDiscord = notificationSetting !== false;
 
     try {
       const hasSlug = await Setting.findOne({ slug });
