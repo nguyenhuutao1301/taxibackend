@@ -10,6 +10,7 @@ import openAi from "./openAi.route.js";
 import setting from "./setting.route.js";
 import dashboardRoute from "./dashboard.route.js";
 import crawl from "./crawl.route.js";
+import toastMessageRoute from "./toastMessage.route.js";
 
 function route(app) {
   app.use("/api", postRoute);
@@ -25,5 +26,6 @@ function route(app) {
   app.use("/api", setting);
   app.use("/api", dashboardRoute);
   app.use("/api", crawl);
+  app.use("/api", toastMessageRoute);
 }
 export default route;

@@ -11,7 +11,7 @@ class settingController {
     }
 
     const Setting = getSettingModel(req.db);
-    const { slug, numberphone, notificationDiscord } = req.body;
+    const { slug, numberphone, notificationDiscord, actionButton } = req.body;
     const config = req.app.locals.config;
 
     if (typeof slug !== "string" || !slug.trim() || typeof numberphone !== "string" || !numberphone.trim()) {
@@ -34,6 +34,7 @@ class settingController {
         slug,
         numberphone,
         notificationDiscord,
+        actionButton,
       });
 
       await newSetting.save();
@@ -107,7 +108,7 @@ class settingController {
       });
     }
 
-    const allowedFields = ["slug", "numberphone", "notificationDiscord"];
+    const allowedFields = ["slug", "numberphone", "notificationDiscord", "actionButton"];
     const data = {};
 
     allowedFields.forEach((field) => {
