@@ -99,23 +99,23 @@ const logger = {
 
   // Domain config log
 
-  //   domain: (action, domainInfo) => {
-  //     const logData = formatLog("INFO", `Domain Config: ${action}`, domainInfo);
-  //     console.log(`🌐 [DOMAIN] ${action}`, domainInfo);
-  //     if (process.env.NODE_ENV === "production") {
-  //       writeToFile("domain.log", logData);
-  //     }
-  //   },
+  domain: (action, domainInfo) => {
+    const logData = formatLog("INFO", `Domain Config: ${action}`, domainInfo);
+    console.log(`🌐 [DOMAIN] ${action}`, domainInfo);
+    if (process.env.NODE_ENV === "production") {
+      writeToFile("domain.log", logData);
+    }
+  },
 
   //   // Database log
 
-  //   database: (action, dbInfo) => {
-  //     const logData = formatLog("INFO", `Database: ${action}`, dbInfo);
-  //     console.log(`🗄️  [DB] ${action}`, dbInfo);
-  //     if (process.env.NODE_ENV === "production") {
-  //       writeToFile("database.log", logData);
-  //     }
-  //   },
+  database: (action, dbInfo) => {
+    const logData = formatLog("INFO", `Database: ${action}`, dbInfo);
+    console.log(`🗄️  [DB] ${action}`, dbInfo);
+    if (process.env.NODE_ENV === "production") {
+      writeToFile("database.log", logData);
+    }
+  },
 
   // Request log
 

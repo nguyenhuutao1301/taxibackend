@@ -56,26 +56,10 @@ export async function configPerDomain(req, res, next) {
     });
   }
 
-  // Log successful domain config
-  logger.domain("CONFIG_LOADED", {
-    domain: normalizedDomain,
-    originalDomain: domainKey,
-    ip: req.ip,
-  });
-
   req.app.locals.config = config;
 
   try {
-    const startTime = Date.now();
     req.db = await getDbConnection(config.DATABASE_URI);
-    const duration = Date.now() - startTime;
-
-    logger.database("CONNECTED", {
-      domain: normalizedDomain,
-      duration: `${duration}ms`,
-      timestamp: new Date().toISOString(),
-    });
-
     next();
   } catch (err) {
     const errorData = {
