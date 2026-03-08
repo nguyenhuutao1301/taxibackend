@@ -103,33 +103,6 @@ app.use(cookieParser());
 // Static file
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-// Middleware track request/response time
-app.use((req, res, next) => {
-  const startTime = Date.now();
-
-  // Lưu method và path
-  const { method, path: reqPath, headers } = req;
-
-  // Hook vào res.end để capture response
-  const originalEnd = res.end;
-  res.end = function (chunk, encoding) {
-    const duration = Date.now() - startTime;
-    const statusCode = res.statusCode;
-
-    // Log request chi tiết
-    logger.request(method, reqPath, statusCode, duration, {
-      ip: req.ip,
-      origin: headers.origin || headers.referer || "unknown",
-      userAgent: headers["user-agent"]?.substring(0, 50) || "unknown",
-    });
-
-    // Call original end
-    originalEnd.call(this, chunk, encoding);
-  };
-
-  next();
-});
-
 // Middleware config domain (sau khi đã parse JSON & cors)
 app.use(configPerDomain);
 
