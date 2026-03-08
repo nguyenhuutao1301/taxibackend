@@ -1,8 +1,13 @@
-import configMap from "../configs/domain/index.js";
-import { getDbConnection } from "../configs/database/mongoConnectionPool.js";
+/**
+ * Domain Configuration Middleware
+ * (từ configPerDomain.js - tác vụ tương tự)
+ */
+
+import configMap from "../config/domain/index.js";
+import { getDbConnection } from "../config/database/mongoConnectionPool.js";
 import logger from "../helpers/logger.js";
 
-// Helper: Normalize domain bằng cách loại bỏ 'www.' prefix
+// Helper: Normalize domain
 function normalizeDomain(domain) {
   if (!domain) return domain;
   return domain.replace(/^www\./, "").toLowerCase();
@@ -32,34 +37,26 @@ export async function configPerDomain(req, res, next) {
     domainKey = host;
   }
 
-  // Normalize domain để xử lý 'www.' prefix
   const normalizedDomain = normalizeDomain(domainKey);
   let config = configMap[normalizedDomain];
 
-  // Nếu không tìm được, log chi tiết cho debugging
   if (!config) {
     logger.domain("CONFIG_NOT_FOUND", {
       original: domainKey,
       normalized: normalizedDomain,
       availableDomains: Object.keys(configMap),
-      referer,
-      origin,
-      host,
-      userAgent: req.headers["user-agent"]?.substring(0, 50),
       ip: req.ip,
     });
 
     return res.status(400).json({
+      success: false,
       message: `Domain unknown: ${domainKey}`,
-      hint: "Contact administrator to add this domain",
       timestamp: new Date().toISOString(),
     });
   }
 
-  // Log successful domain config
   logger.domain("CONFIG_LOADED", {
     domain: normalizedDomain,
-    originalDomain: domainKey,
     ip: req.ip,
   });
 
@@ -73,25 +70,22 @@ export async function configPerDomain(req, res, next) {
     logger.database("CONNECTED", {
       domain: normalizedDomain,
       duration: `${duration}ms`,
-      timestamp: new Date().toISOString(),
     });
 
     next();
   } catch (err) {
-    const errorData = {
+    logger.error("DATABASE_CONNECTION_FAILED", err, {
       domain: normalizedDomain,
-      error: err.message,
       errorCode: err.code,
-      errorName: err.name,
       ip: req.ip,
-      timestamp: new Date().toISOString(),
-    };
-
-    logger.error("DATABASE_CONNECTION_FAILED", err, errorData);
+    });
 
     res.status(500).json({
+      success: false,
       message: "Cannot connect to database",
       timestamp: new Date().toISOString(),
     });
   }
 }
+
+export default { configPerDomain };
