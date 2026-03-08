@@ -4,7 +4,6 @@ import { isbot } from "isbot";
 import { getTrafficModel } from "../models/traffic.models.js";
 import { getSettingModel } from "../models/setting.models.js";
 import { getToastModel } from "../models/toastMessage.models.js";
-
 import { sendDiscordMessage } from "../../helpers/discord/index.js";
 import { sendTelegramMessage } from "../../helpers/telegram/index.js";
 

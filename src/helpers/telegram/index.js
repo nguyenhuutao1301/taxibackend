@@ -70,7 +70,6 @@ ${additionalInfo || "Không có"}
     await axiosClient.post(`https://api.telegram.org/bot${token}/sendMessage`, {
       chat_id: chatId,
       text,
-      parse_mode: "Markdown",
     });
 
     return true;
