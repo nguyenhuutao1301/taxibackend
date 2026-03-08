@@ -84,7 +84,6 @@ app.use(
       ];
 
       if (allowedOrigins.includes(origin)) {
-        logger.cors("ALLOWED", origin, true);
         return callback(null, true);
       } else {
         logger.cors("BLOCKED", origin, false);
