@@ -1,4 +1,5 @@
 import { getToastModel } from "../models/toastMessage.models.js";
+import { maskSecret } from "../../helpers/security/maskSecret.js";
 
 // filepath: d:\workplace\taxiwebproject\backend\src\app\controllers\toastMessage.controller.js
 
@@ -31,20 +32,31 @@ export async function createToastMessage(req, res) {
 export async function getToastMessage(req, res) {
   try {
     const Toast = getToastModel(req.db);
+
     const toasts = await Toast.find();
 
     const maskedToasts = toasts.map((toast) => ({
       ...toast.toObject(),
-      telegramChatId: toast.telegramChatId?.slice(-6) || "",
-      telegramToken: toast.telegramToken?.slice(-6) || "",
-      discordWebhook: toast.discordWebhook?.slice(-6) || "",
+
+      telegramChatId: maskSecret(toast.telegramChatId),
+
+      telegramToken: maskSecret(toast.telegramToken),
+
+      discordWebhook: maskSecret(toast.discordWebhook),
+
       toastDiscord: toast.toastDiscord,
       toastTelegram: toast.toastTelegram,
     }));
 
-    res.status(200).json({ success: true, data: maskedToasts });
+    res.status(200).json({
+      success: true,
+      data: maskedToasts,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 }
 
