@@ -1,5 +1,5 @@
 import OrderRepository from "../repositories/order.repository.js";
-import { sendOrderToDiscord } from "../../helpers/discord/index.js";
+import { sendOrderToDiscord } from "../helpers/discord/index.js";
 
 /**
  * Order Service

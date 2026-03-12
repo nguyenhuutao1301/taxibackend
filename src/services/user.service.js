@@ -362,16 +362,6 @@ class UserService {
     const { password, ...userWithoutPassword } = user.toObject();
     return userWithoutPassword;
   }
-}
-
-export default UserService;
-      };
-    } catch (error) {
-      logger.error("UserService: Create user failed", error, { email: userData.email });
-      throw error;
-    }
-  }
-
   // ✅ Update user
   async updateUser(userId, updateData) {
     try {

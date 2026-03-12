@@ -1,6 +1,6 @@
 import { getOrderModel } from "../models/order.models.js";
 import { sendOrderToDiscord as sendToDiscord } from "../../helpers/discord/index.js";
-
+import { sendOrderToTelegram } from "../../helpers/telegram/index.js";
 class OrtherController {
   createOrder = async (req, res) => {
     const Booking = getOrderModel(req.db);
@@ -9,23 +9,17 @@ class OrtherController {
 
     try {
       const { userId, visitorId, ...dataBooking } = req.body;
-      const {
-        addressFrom,
-        addressTo,
-        serviceType,
-        phoneNumber,
-        additionalInfo,
-      } = dataBooking;
+      const { addressFrom, addressTo, serviceType, phoneNumber, additionalInfo } = dataBooking;
 
       const dataSend = { ...dataBooking, DISCORD_WEBHOOK_URL };
 
       // Check thông tin bắt buộc
       if (!addressFrom || !phoneNumber) {
-        return res
-          .status(400)
-          .json({ message: "error", err: "Thiếu thông tin bắt buộc." });
+        return res.status(400).json({ message: "error", err: "Thiếu thông tin bắt buộc." });
       }
 
+      // Gửi Telegram
+      await sendOrderToTelegram(dataBooking);
       // Gửi Discord (1 lần duy nhất)
       await sendToDiscord(dataSend);
 
@@ -82,9 +76,7 @@ class OrtherController {
       }
     } catch (error) {
       console.error("Lỗi tạo đơn đặt xe:", error);
-      return res
-        .status(500)
-        .json({ message: "error", err: "Lỗi server, vui lòng thử lại sau." });
+      return res.status(500).json({ message: "error", err: "Lỗi server, vui lòng thử lại sau." });
     }
   };
 
@@ -111,9 +103,7 @@ class OrtherController {
       }
 
       const history = await Booking.find(query)
-        .select(
-          "addressFrom addressTo createdAt serviceType status _id rating visitorId userId"
-        )
+        .select("addressFrom addressTo createdAt serviceType status _id rating visitorId userId")
         .sort({ createdAt: -1 });
 
       return res.status(200).json({ message: "success", err: "", history });
@@ -184,9 +174,7 @@ class OrtherController {
     try {
       const orther = req.body;
 
-      Object.keys(orther).forEach(
-        (key) => orther[key] === undefined && delete orther[key]
-      );
+      Object.keys(orther).forEach((key) => orther[key] === undefined && delete orther[key]);
       await Booking.findByIdAndUpdate(_id, orther);
       return res.status(200).json({
         success: true,

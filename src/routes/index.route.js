@@ -11,6 +11,7 @@ import setting from "./setting.route.js";
 import dashboardRoute from "./dashboard.route.js";
 import crawl from "./crawl.route.js";
 import toastMessageRoute from "./toastMessage.route.js";
+import v1 from "./v1/index.js";
 
 function route(app) {
   app.use("/api", postRoute);
@@ -27,5 +28,6 @@ function route(app) {
   app.use("/api", dashboardRoute);
   app.use("/api", crawl);
   app.use("/api", toastMessageRoute);
+  app.use("/api/v1", v1);
 }
 export default route;
