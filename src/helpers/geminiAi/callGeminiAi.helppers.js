@@ -15,7 +15,7 @@ export default async function callGeminiAi(prompt) {
       const currentKey = keyManager.getNextValidKey();
       const genAI = new GoogleGenerativeAI(currentKey);
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash-lite",
+        model: "gemini-3.1-pro-preview",
       });
 
       const result = await model.generateContent(prompt);
