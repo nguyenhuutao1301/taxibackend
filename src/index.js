@@ -73,10 +73,17 @@ app.use(
         // taxisieure.com
         "https://taxisieure.com",
         "https://www.taxisieure.com",
+        // blog.taxisieure.com
+        "https://blog.taxisieure.com",
+        "https://www.blog.taxisieure.com",
 
         // hotrodatxesieure.com
         "https://hotrodatxesieure.com",
         "https://www.hotrodatxesieure.com",
+
+        // datxemaytaxidian.com
+        "https://datxemaytaxidian.com",
+        "https://www.datxemaytaxidian.com",
 
         // tongdatdatxe24gio.top
         "https://tongdatdatxe24gio.top",
