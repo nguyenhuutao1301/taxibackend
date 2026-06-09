@@ -104,7 +104,7 @@ export const crawlFromSitemapController = async (req, res) => {
             const post = new Post({
               title: data.title,
               description: data.description || data.title,
-              slug: converSlug(data.title) || data.slug,
+              slug: data.slug || converSlug(data.title),
               content: cleanContent(data.content),
               authorName: "Tổng Đài Đặt Xe",
               authorUrl: "/profile/6905c52e88aabc72ed51aa47",

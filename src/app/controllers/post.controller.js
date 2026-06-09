@@ -200,11 +200,14 @@ class PostController {
   getPostBySlug = async (req, res) => {
     const Post = getPostModel(req.db);
     try {
-      const slug = req.params.slug;
-      if (!slug) {
-        return res.status(400).json({ message: "Slug là bắt buộc" });
-      }
-      const post = await Post.findOne({ slug });
+      const slug = encodeURIComponent(decodeURIComponent(req.params.slug));
+
+      const post = await Post.findOne({
+        slug: {
+          $regex: `^${slug}$`,
+          $options: "i",
+        },
+      });
       if (!post) {
         console.log("Không tìm thấy bài viết với slug:", slug);
         return res.status(404).json({ message: "Không tìm thấy bài viết" });
