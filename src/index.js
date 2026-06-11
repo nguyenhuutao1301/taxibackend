@@ -74,8 +74,8 @@ app.use(
         "https://taxisieure.com",
         "https://www.taxisieure.com",
         // blog.taxisieure.com
-        "https://blog.taxisieure.com",
-        "https://www.blog.taxisieure.com",
+        "https://blogs.taxisieure.com",
+        "https://www.blogs.taxisieure.com",
 
         // hotrodatxesieure.com
         "https://hotrodatxesieure.com",
