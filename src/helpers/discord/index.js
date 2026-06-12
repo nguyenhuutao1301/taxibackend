@@ -9,7 +9,7 @@ const axiosClient = axios.create({
 export async function sendDiscordMessage({ ip, lat, lon, referrer, device, browser, userAgent, DISCORD_WEBHOOK_URL }) {
   if (!DISCORD_WEBHOOK_URL) return false;
 
-  const maps = lat && lon ? `[Google Maps](https://www.google.com/maps/place/${lat},${lon})` : "Không lấy được vị trí";
+  const maps = lat && lon ? `[Google Maps](https://www.google.com/maps/place/${lat},${lon})` : "Không xác định";
 
   const payload = {
     embeds: [
@@ -17,11 +17,11 @@ export async function sendDiscordMessage({ ip, lat, lon, referrer, device, brows
         title: `👤 Truy cập từ ${referrer || "Trực tiếp"}`,
         color: 3447003,
         fields: [
-          { name: "🌐 IP", value: ip || "unknown", inline: true },
+          { name: "🌐 IP", value: ip || "không xác định", inline: true },
           { name: "📍 Vị trí", value: maps, inline: true },
-          { name: "💻 Thiết bị", value: device || "unknown", inline: true },
-          { name: "🌍 Trình duyệt", value: browser || "unknown", inline: true },
-          { name: "🔍 User-Agent", value: userAgent || "unknown" },
+          { name: "💻 Thiết bị", value: device || "không xác định", inline: true },
+          { name: "🌍 Trình duyệt", value: browser || "không xác định", inline: true },
+          { name: "🔍 User-Agent", value: userAgent || "không xác định" },
         ],
         timestamp: new Date().toISOString(),
       },

@@ -1,27 +1,52 @@
 import { getOrderModel } from "../models/order.models.js";
+import { getToastModel } from "../models/toastMessage.models.js";
 import { sendOrderToDiscord as sendToDiscord } from "../../helpers/discord/index.js";
 import { sendOrderToTelegram } from "../../helpers/telegram/index.js";
 class OrtherController {
   createOrder = async (req, res) => {
     const Booking = getOrderModel(req.db);
+    const Toast = getToastModel(req.db);
     const config = req.app.locals.config;
-    const DISCORD_WEBHOOK_URL = config.DISCORD_WEBHOOK;
 
     try {
       const { userId, visitorId, ...dataBooking } = req.body;
       const { addressFrom, addressTo, serviceType, phoneNumber, additionalInfo } = dataBooking;
 
-      const dataSend = { ...dataBooking, DISCORD_WEBHOOK_URL };
-
       // Check thông tin bắt buộc
       if (!addressFrom || !phoneNumber) {
-        return res.status(400).json({ message: "error", err: "Thiếu thông tin bắt buộc." });
+        return res.status(400).json({ message: "error", err: "Thiếu thông tin " });
       }
 
-      // Gửi Telegram
-      await sendOrderToTelegram(dataBooking);
+      // Lấy Toast settings (nếu có)
+      const toast = await Toast.findOne().lean();
+
+      // Xác định Discord webhook: ưu tiên setting, nếu không có thì dùng config
+      const DISCORD_WEBHOOK_URL = toast?.discordWebhook || config.DISCORD_WEBHOOK;
+      const TELEGRAM_TOKEN = toast?.telegramToken;
+      const TELEGRAM_CHAT_ID = toast?.telegramChatId;
+
+      // Gửi Telegram (nếu có cấu hình)
+      if (TELEGRAM_TOKEN && TELEGRAM_CHAT_ID) {
+        const dataBookingTelegram = {
+          token: TELEGRAM_TOKEN,
+          chatId: TELEGRAM_CHAT_ID,
+          addressFrom,
+          addressTo,
+          phoneNumber,
+          serviceType,
+          additionalInfo,
+        };
+        await sendOrderToTelegram(dataBookingTelegram);
+      }
       // Gửi Discord (1 lần duy nhất)
-      await sendToDiscord(dataSend);
+      await sendToDiscord({
+        addressFrom,
+        addressTo,
+        phoneNumber,
+        serviceType,
+        additionalInfo,
+        DISCORD_WEBHOOK_URL,
+      });
 
       // Nếu chưa đăng nhập → lưu bằng visitorId
       if (!userId) {

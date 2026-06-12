@@ -9,7 +9,7 @@ const axiosClient = axios.create({
 export async function sendTelegramMessage({ token, chatId, ip, lat, lon, referrer, device, browser, userAgent }) {
   if (!token || !chatId) return false;
 
-  const maps = lat && lon ? `https://www.google.com/maps/place/${lat},${lon}` : "Không lấy được vị trí";
+  const maps = lat && lon ? `https://www.google.com/maps/place/${lat},${lon}` : "Không xác định";
 
   const text = `
 👤 *Truy cập từ:* ${referrer || "Trực tiếp"}
@@ -19,8 +19,6 @@ export async function sendTelegramMessage({ token, chatId, ip, lat, lon, referre
 
 💻 *Thiết bị:* ${device}
 🌍 *Trình duyệt:* ${browser}
-
-⏰ ${new Date().toLocaleString()}
 `;
 
   try {
@@ -61,9 +59,7 @@ export async function sendOrderToTelegram({
 🚘 *Dịch vụ:* ${serviceType}
 
 📝 *Thông tin thêm:*
-${additionalInfo || "Không có"}
-
-⏰ ${new Date().toLocaleString()}
+${additionalInfo || " "}
 `;
 
   try {

