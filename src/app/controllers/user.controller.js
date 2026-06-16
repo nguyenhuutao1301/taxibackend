@@ -190,13 +190,18 @@ const authUser = {
   viewUser: async (req, res) => {
     const User = getUserModel(req.db);
     try {
-      const id = req.query.id;
-      if (!id) {
+      // const _id = req.query.id.trim();
+      const _id = "68b54477357138f28d16d110";
+      console.log("Received ID:", _id);
+      if (!_id) {
         return res.status(400).json({ message: "ID không hợp lệ." });
       }
-      const user = await User.findById(id);
+      // const user = await User.findById(id);
+      const user = await User.findById({ _id }).select("-password"); // ẩn trường password
+      console.log(user);
       if (!user) {
         return res.status(404).json({ message: "Không tìm thấy người dùng." });
+        console.log("User not found for ID:", _id);
       }
       return res.status(200).json({ success: true, result: user });
     } catch (error) {
@@ -338,7 +343,7 @@ const authUser = {
     }
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 số
     const expiresAt = new Date(
-      Date.now() + 1000 * 60 * Number(process.env.OTP_EXPIRE_MINUTES || 5) // ép kiểu number
+      Date.now() + 1000 * 60 * Number(process.env.OTP_EXPIRE_MINUTES || 5), // ép kiểu number
     );
 
     try {
