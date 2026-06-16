@@ -190,15 +190,13 @@ const authUser = {
   viewUser: async (req, res) => {
     const User = getUserModel(req.db);
     try {
-      // const _id = req.query.id.trim();
-      const _id = "68b54477357138f28d16d110";
-      console.log("Received ID:", _id);
+      const _id = req.query.id;
       if (!_id) {
         return res.status(400).json({ message: "ID không hợp lệ." });
       }
       // const user = await User.findById(id);
       const user = await User.findById({ _id }).select("-password"); // ẩn trường password
-      console.log(user);
+
       if (!user) {
         return res.status(404).json({ message: "Không tìm thấy người dùng." });
         console.log("User not found for ID:", _id);
