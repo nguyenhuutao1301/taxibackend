@@ -88,6 +88,10 @@ app.use(
         // tongdatdatxe24gio.top
         "https://tongdatdatxe24gio.top",
         "https://www.tongdatdatxe24gio.top",
+
+        // viettaxi.pro.vn
+        "https://viettaxi.pro.vn",
+        "https://www.viettaxi.pro.vn",
       ];
 
       if (allowedOrigins.includes(origin)) {
@@ -104,6 +108,7 @@ app.use(
     maxAge: 86400, // 24 hours
   }),
 );
+
 // Cookie parser
 app.use(cookieParser());
 

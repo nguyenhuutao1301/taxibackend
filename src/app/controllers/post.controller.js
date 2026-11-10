@@ -9,6 +9,7 @@ class PostController {
     try {
       let counter = 1;
       const {
+        author,
         title,
         description,
         slug,
@@ -43,6 +44,7 @@ class PostController {
         category,
         likes,
         breadcrumbs,
+        author,
       });
       // save data to database
       const saveNewPost = await newPost.save();
@@ -207,22 +209,21 @@ class PostController {
           $regex: `^${slug}$`,
           $options: "i",
         },
-      });
+      }).populate("author", "username avatar");
       if (!post) {
         console.log("Không tìm thấy bài viết với slug:", slug);
         return res.status(404).json({ message: "Không tìm thấy bài viết" });
       }
 
-      res.status(200).json(post);
+      return res.status(200).json(post);
     } catch (error) {
       console.error("Lỗi khi lấy bài viết:", error); // Thêm log chi tiết
-      res.status(500).json({ message: "Lỗi khi lấy bài viết" });
+      return res.status(500).json({ message: "Lỗi khi lấy bài viết" });
     }
   };
   getPostById = async (req, res) => {
     const Post = getPostModel(req.db);
     const _id = req.params.id;
-    console.log("id:", _id);
     if (!_id) {
       return res.status(400).json({ message: "error" });
     }
@@ -232,10 +233,10 @@ class PostController {
       if (!post) {
         return res.status(404).json({ message: "not found" });
       }
-      res.status(200).json(post);
+      return res.status(200).json(post);
     } catch (error) {
       console.error("Lỗi khi lấy bài viết:", error);
-      res.status(500).json({ message: "error" });
+      return res.status(500).json({ message: "error" });
     }
   };
   // [DELETE] /api/posts/:id
@@ -516,7 +517,7 @@ class PostController {
       });
     } catch (error) {
       console.error("Lỗi khi cập nhật bài viết:", error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Lỗi khi cập nhật bài viết",
         error: error.message,

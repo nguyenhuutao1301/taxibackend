@@ -21,9 +21,9 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export function getUserModel(connection) {
-  return connection.model("User", userSchema);
+  return connection.models.User || connection.model("User", userSchema);
 }

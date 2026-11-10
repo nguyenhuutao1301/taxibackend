@@ -82,8 +82,13 @@ const PostSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export function getPostModel(connection) {

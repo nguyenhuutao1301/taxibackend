@@ -189,8 +189,10 @@ const authUser = {
   // [GET] /api/user/[id]
   viewUser: async (req, res) => {
     const User = getUserModel(req.db);
+
     try {
       const _id = req.query.id;
+
       if (!_id) {
         return res.status(400).json({ message: "ID không hợp lệ." });
       }

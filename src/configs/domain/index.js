@@ -134,6 +134,27 @@ const configMap = {
     `,
     numberWord: "2500-3500",
   },
+  "viettaxi.pro.vn": {
+    DATABASE_URI: process.env.MONGODB_URI_BLOGSTAXISIEURE,
+    DISCORD_WEBHOOK: process.env.DISCORD_WEBHOOK_URL_TAXISIEURE,
+    JWT_SECRET: process.env.JWT_SECRET_TAXISIEURE,
+    JWT_SECRET_RERESH: process.env.JWT_SECRET_RERESH_TAXISIEURE,
+    HOST: process.env.HOST,
+    EMAIL_USER: process.env.EMAIL_USER_TAXISIEURE,
+    EMAIL_PASS: process.env.EMAIL_PASS_TAXISIEURE,
+    DOMAIN: "https://blog.taxisieure.com",
+    PROMPT: `Nội dung phải CHUYÊN SÂU:
+   - Ngành viết về dịch vụ vận tải hành khách như grab , bee, vinasun , xanh sm ,...
+   - dùng thông tin về địa phương như các huyện , tỉnh , phường , xã , thành phố và các địa điểm nổi tiếng , các danh lam thắng cảnh>
+   - Có thể sử dụng ví dụ thực tế, số liệu, và nghiên cứu liên quan.
+   - Một số thông tin su dung trong content:
+      + Số điện thoại 0898335292
+      + Website: https://blog.taxisieure.com
+      + Có thể đặt xe qua biểu mẫu trong website ( nhập điểm đón , điểm đến, loại xe , số điện thoại )
+   - nếu có thể hãy sử dụng bảng giá cước tham khảo
+    `,
+    numberWord: "2500-3500",
+  },
   "hotrodatxesieure.com": {
     DATABASE_URI: process.env.MONGODB_URI_HOTRODATXESIEURE,
     DISCORD_WEBHOOK: process.env.DISCORD_WEBHOOK_URL_HOTRODATXESIEURE,
